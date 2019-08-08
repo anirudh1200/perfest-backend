@@ -2,6 +2,7 @@ const express = require('express'),
 	bodyParser = require('body-parser'),
 	mongoose = require('mongoose'),
     logger = require('morgan'),
+    seedDb = require('./seed'),
 	authRoutes = require('./routes/authRoutes');
 
 const app = express();
@@ -23,6 +24,7 @@ const mongo_uri = 'mongodb://localhost/perfest';
 mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true })
     .then(() => console.log("Database connected"))
     .catch(console.log);
+seedDb();
 
 //=======================
 // ALLOW-CORS
