@@ -23,7 +23,11 @@ const eventSchema = new mongoose.Schema({
 	image: {
 		type: String,
 		required: true
+	},
+	venue: {
+		type: String,
+		required: true
 	}
 });
 
-module.exports = mongoose('Event', eventSchema);
+module.exports = mongoose.model('Event', eventSchema);

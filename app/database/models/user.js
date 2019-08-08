@@ -3,47 +3,52 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
 	name: {
 		type: String,
-		required: true
+		default: null
 	},
 	password: {
 		type: String,
-		required: true,
-		default: 'd'
+		default: null
 	},
-	// set unique
+	// solve unique error
 	contact: {
 		email: {
 			type: String,
-			unique: true
+			index: true,
+			unique: true,
+			sparse: true
 		},
 		phone: {
 			type: String,
-			unique: true
+			unique: true,
+			index: true,
+			unique: true,
+			sparse: true
 		},
 	},
 	college: {
 		name: {
 			type: String,
-			required: true,
-			default: 'd'
+			default: null
 		},
+		// For techfest csi
 		department: {
 			type: String,
-			required: true,
-			default: 'd'
+			default: null
 		},
 		year: {
 			type: String,
-			required: true,
-			default: 'd'
+			default: null
 		},
 	},
 	// anonymous->false, user->true
 	type: {
 		type: Boolean,
-		required: True,
 		default: false
 	},
+	csi_member: {
+		type: Boolean,
+		default: false
+	}
 });
 
-module.exports = mongoose('User', userSchema);
+module.exports = mongoose.model('User', userSchema);

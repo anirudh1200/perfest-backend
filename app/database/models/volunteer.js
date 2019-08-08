@@ -1,13 +1,12 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const volunteerSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		required: true
 	},
 	password: {
 		type: String,
-		required: true,
 		default: 'd'
 	},
 	// set unique
@@ -26,18 +25,15 @@ const userSchema = new mongoose.Schema({
 	college: {
 		name: {
 			type: String,
-			required: true,
-			default: 'd'
+			default: null
 		},
 		department: {
 			type: String,
-			required: true,
-			default: 'd'
+			default: null
 		},
 		year: {
 			type: String,
-			required: true,
-			default: 'd'
+			default: null
 		},
 	},
 	sold: {
@@ -52,4 +48,4 @@ const userSchema = new mongoose.Schema({
 	}
 });
 
-module.exports = mongoose('User', userSchema);
+module.exports = mongoose.model('Volunteer', volunteerSchema);

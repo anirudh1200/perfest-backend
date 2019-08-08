@@ -1,7 +1,7 @@
 const express = require('express'),
 	bodyParser = require('body-parser'),
 	mongoose = require('mongoose'),
-	logger        = require('morgan'),
+    logger = require('morgan'),
 	authRoutes = require('./routes/authRoutes');
 
 const app = express();
@@ -20,9 +20,9 @@ app.use(logger('dev'));
 
 // for development
 const mongo_uri = 'mongodb://localhost/perfest';
-mongoose.connect(mongo_uri, { useNewUrlParser: true })
+mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true })
     .then(() => console.log("Database connected"))
-	.catch(console.log);
+    .catch(console.log);
 
 //=======================
 // ALLOW-CORS

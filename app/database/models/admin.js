@@ -7,39 +7,33 @@ const adminSchema = new mongoose.Schema({
 	},
 	password: {
 		type: String,
-		required: true,
-		default: 'd'
+		default: null
 	},
 	// set unique
 	contact: {
 		email: {
 			type: String,
 			unique: true,
-			required: true
 		},
 		phone: {
 			type: String,
 			unique: true,
-			required: true
 		},
 	},
 	college: {
 		name: {
 			type: String,
-			required: true,
-			default: 'd'
+			default: null
 		},
 		department: {
 			type: String,
-			required: true,
-			default: 'd'
+			default: null
 		},
 		year: {
 			type: String,
-			required: true,
-			default: 'd'
+			default: null
 		},
 	},
 });
 
-module.exports = mongoose('Admin', adminSchema);
+module.exports = mongoose.model('Admin', adminSchema);

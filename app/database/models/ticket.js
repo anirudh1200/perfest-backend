@@ -8,7 +8,8 @@ const ticketSchema = new mongoose.Schema({
 	},
 	url: {
 		type: String,
-		required: true
+		required: true,
+		unique: true
 	},
 	valid: {
 		type: Boolean,
@@ -42,4 +43,4 @@ const ticketSchema = new mongoose.Schema({
 	}
 });
 
-module.exports = mongoose('Ticket', ticketSchema);
+module.exports = mongoose.model('Ticket', ticketSchema);
