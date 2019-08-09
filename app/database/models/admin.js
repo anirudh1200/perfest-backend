@@ -7,17 +7,19 @@ const adminSchema = new mongoose.Schema({
 	},
 	password: {
 		type: String,
-		default: null
+		required: true
 	},
 	// set unique
 	contact: {
 		email: {
 			type: String,
 			unique: true,
+			sparse: true
 		},
 		phone: {
 			type: String,
 			unique: true,
+			sparse: true
 		},
 	},
 	college: {

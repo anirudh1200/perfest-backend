@@ -9,18 +9,14 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		default: null
 	},
-	// solve unique error
 	contact: {
 		email: {
-			type: String,
-			index: true,
+			type: String,	
 			unique: true,
 			sparse: true
 		},
 		phone: {
 			type: String,
-			unique: true,
-			index: true,
 			unique: true,
 			sparse: true
 		},

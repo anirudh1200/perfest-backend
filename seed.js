@@ -1,7 +1,9 @@
 // Dummy data for development
+// Please update this if schema is changed
+// Or you want to add more data and different cases
 const mongoose = require('mongoose'),
 	Admin = require('./app/database/models/admin'),
-	Events = require('./app/database/models/events'),
+	Event = require('./app/database/models/events'),
 	Ticket = require('./app/database/models/ticket'),
 	User = require('./app/database/models/user'),
 	Volunteers = require('./app/database/models/volunteer');
@@ -43,6 +45,7 @@ let eventData = [
 		cost_1: 30,
 		cost_2: 50,
 		cost_4: 80,
+		volunteers: [],
 		image: './data/images/event1.jpg',
 		venue: 'mumbai'
 	},
@@ -53,6 +56,7 @@ let eventData = [
 		cost_1: 30,
 		cost_2: 50,
 		cost_4: 80,
+		volunteers: [],
 		image: './data/images/event1.jpg',
 		venue: 'mumbai'
 	}
@@ -125,27 +129,21 @@ let userData = [
 
 let ticketData = [
 	{
-		user_id: mongoose.Types.ObjectId('4edd40c86762e0fb12000003'),
+		user_id: null,
 		url: 'abcd',
-		event: [
-			mongoose.Types.ObjectId('4edd40c86762e0fb12000003'),
-			mongoose.Types.ObjectId('4edd40c86762e0fb12000003')
-		],
-		volunteer_id: mongoose.Types.ObjectId('4edd40c86762e0fb12000003'),
+		event: [],
+		volunteer_id: null,
 		price: 30,
-		paid: true,
+		paid: 15,
 		participantNo: 1
 	},
 	{
-		user_id: mongoose.Types.ObjectId('4edd40c86762e0fb12000003'),
+		user_id: null,
 		url: 'abcde',
-		event: [
-			mongoose.Types.ObjectId('4edd40c86762e0fb12000003'),
-			mongoose.Types.ObjectId('4edd40c86762e0fb12000003')
-		],
-		volunteer_id: mongoose.Types.ObjectId('4edd40c86762e0fb12000003'),
+		event: [],
+		volunteer_id: null,
 		price: 30,
-		paid: true,
+		paid: 30,
 		participantNo: 1
 	},
 ]
@@ -164,10 +162,7 @@ let volunteerData = [
 			year: 'F.E'
 		},
 		sold: {
-			ticket: [
-				mongoose.Types.ObjectId('4edd40c86762e0fb12000003'),
-				mongoose.Types.ObjectId('4edd40c86762e0fb12000003')
-			],
+			ticket: [],
 			amountCollected: 50
 		}
 	},
@@ -184,54 +179,125 @@ let volunteerData = [
 			year: 'F.E'
 		},
 		sold: {
-			ticket: [
-				mongoose.Types.ObjectId('4edd40c86762e0fb12000003'),
-			],
+			ticket: [],
 			amountCollected: 30
 		}
 	},
+	{
+		name: 'Vol3',
+		password: 'eencrypted',
+		contact: {
+			email: 'vol213@abc.com',
+			phone: '121111xxxx'
+		},
+		college: {
+			name: 'college1',
+			department: 'cs',
+			year: 'F.E'
+		},
+	},
 ]
 
-seedDB = async() => {
-	try{
-		await Admin.deleteMany()
-		console.log('Deleted Admin Collection')
-		await Events.deleteMany()
-		console.log('Deleted Events Collection')
-		await Ticket.deleteMany()
-		console.log('Deleted Ticket Collection')
-		await User.deleteMany()
-		console.log('Deleted User Collection')
-		await Volunteers.deleteMany()
-		console.log('Deleted Volunteer Collection')
-	} catch(err){
-		console.log(err);
+let clearDB = async () => {
+	try {
+		await Admin.deleteMany();
+		console.log('Deleted Admin Collection');
+		await Event.deleteMany();
+		console.log('Deleted Event Collection');
+		await Ticket.deleteMany();
+		console.log('Deleted Ticket Collection');
+		await User.deleteMany();
+		console.log('Deleted User Collection');
+		await Volunteers.deleteMany();
+		console.log('Deleted Volunteer Collection');
+	} catch (err) {
+		throw new Error(err);
 	}
-	adminData.forEach(admin => {
+}
+
+let insertAdmin = async () => {
+	let finalArray = adminData.map(async admin => {
 		let newAdmin = new Admin(admin);
-		newAdmin.save()
-			.catch(console.log);
+		try {
+			return await newAdmin.save();
+		} catch (err) {
+			console.log(err);
+			return;
+		}
 	});
-	eventData.forEach(event => {
-		let newEvent = new Events(event);
-		newEvent.save()
-			.catch(console.log);
-	});
-	ticketData.forEach(ticket => {
-		let newTicket = new Ticket(ticket);
-		newTicket.save()
-			.catch(console.log);
-	});
-	userData.forEach(user => {
-		let newUser = new User(user);
-		newUser.save()
-			.catch(console.log);
-	});
-	volunteerData.forEach(volunteer => {
+	await Promise.all(finalArray);
+};
+
+let insertVolunteers = async () => {
+	let finalArray = volunteerData.map(async volunteer => {
 		let newVolunteer = new Volunteers(volunteer);
-		newVolunteer.save()
-			.catch(console.log);
+		try {
+			return await newVolunteer.save();
+		} catch (err) {
+			return;
+		}
 	});
+	await Promise.all(finalArray);
+};
+
+let insertUsers = async () => {
+	let finalArray = userData.map(async user => {
+		let newUser = new User(user);
+		try {
+			return await newUser.save();
+		} catch (err) {
+			console.log(err);
+			return;
+		}
+	});
+	await Promise.all(finalArray);
+};
+
+let insertEvents = async (volunterList) => {
+	let finalArray = eventData.map(async (event, i) => {
+		event.volunteers.push(volunterList[i]['_id']);
+		let newEvent = new Event(event);
+		try {
+			return await newEvent.save();
+		} catch (err) {
+			console.log(err);
+			return;
+		}
+	});
+	await Promise.all(finalArray);
+}
+
+let insertTickets = async (volunterList, userList, eventList) => {
+	let finalArray = ticketData.map(async (ticket, i) => {
+		ticket['user_id'] = userList[i]['_id'];
+		ticket['volunteer_id'] = volunterList[i]['_id'];
+		ticket.event = eventList[i]['_id'];
+		let newTicket = new Ticket(ticket);
+		try {
+			return await newTicket.save();
+		} catch (err) {
+			console.log(err);
+			return;
+		}
+	});
+	await Promise.all(finalArray);
+}
+
+seedDB = async () => {
+	await clearDB();
+	await insertAdmin();
+	console.log('Inserted Admins');
+	await insertVolunteers();
+	console.log('Inserted Volunteers');
+	let volunterList = await Volunteers.find();
+	await insertUsers();
+	console.log('Inserted Users');
+	let userList = await User.find({});
+	await insertEvents(volunterList);
+	console.log('Inserted Events');
+	let eventList = await Event.find();
+	await insertTickets(volunterList, userList, eventList);
+	console.log('Inserted Tickets');
 }
 
 module.exports = seedDB;

@@ -33,7 +33,6 @@ const ticketSchema = new mongoose.Schema({
 		type: Number,
 		required: true
 	},
-	// Balance = price-paid automatically to be done
 	balance: {
 		type: Number
 	},
@@ -41,6 +40,15 @@ const ticketSchema = new mongoose.Schema({
 		type: Number,
 		required: true
 	}
+});
+
+ticketSchema.pre('save', function(next) {
+	if(this.price - this.paid !== 0){
+		this.balance = this.price - this.paid
+	} else {
+		this.balance = null;
+	}
+	next();
 });
 
 module.exports = mongoose.model('Ticket', ticketSchema);
