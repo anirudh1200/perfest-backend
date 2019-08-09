@@ -36,6 +36,10 @@ const volunteerSchema = new mongoose.Schema({
 			default: null
 		},
 	},
+	events: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Event'
+	}],
 	sold: {
 		ticket: [{
 				type: mongoose.Schema.Types.ObjectId,

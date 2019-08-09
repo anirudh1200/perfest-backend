@@ -17,12 +17,12 @@ const ticketSchema = new mongoose.Schema({
 	},
 	event: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Events',
+		ref: 'Event',
 		required: true
 	},
 	volunteer_id: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: 'User',
+		ref: 'Volunteer',
 		required: true
 	},
 	price: {
@@ -39,6 +39,10 @@ const ticketSchema = new mongoose.Schema({
 	participantNo: {
 		type: Number,
 		required: true
+	},
+	date: {
+		type: Date,
+		default: new Date()
 	}
 });
 

@@ -3,7 +3,8 @@ const express = require('express'),
 	mongoose = require('mongoose'),
     logger = require('morgan'),
     seedDb = require('./seed'),
-	authRoutes = require('./routes/authRoutes');
+    authRoutes = require('./routes/authRoutes'),
+    userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use(function (req, res, next) {
 //=======================
 
 app.use('/auth/', authRoutes);
+app.use('/user/', userRoutes);
 
 //=======================
 // STARTING THE SERVER
