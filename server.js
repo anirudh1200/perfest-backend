@@ -5,6 +5,7 @@ const express = require('express'),
     seedDb = require('./seed.js'),
     authRoutes = require('./routes/authRoutes'),
     userRoutes = require('./routes/userRoutes'),
+    eventRoutes = require('./routes/eventRoutes'),
     authMiddleware=require('./app/middleware/middleware');
 
 const app = express();
@@ -45,6 +46,7 @@ app.use(function (req, res, next) {
 
 app.use('/auth/', authRoutes);
 app.use('/user/', userRoutes);
+app.use('/event/', eventRoutes);
 
 //=======================
 // STARTING THE SERVER

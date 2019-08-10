@@ -4,8 +4,13 @@ const express = require('express'),
 const eventController = require('../app/controllers/eventController');
 
 // @route		GET /event/list
-// @desc		will get tall events
+// @desc		will get all events
 // @return	eventList(array of all events)
 router.get('/list', eventController.getAllEvents);
+
+// @route		GET /event/:id
+// @desc		will get a particular event
+// @return	event(the event info)
+router.get('/:id', eventController.getEvent);
 
 module.exports = router;
