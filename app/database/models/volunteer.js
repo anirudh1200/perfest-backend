@@ -9,7 +9,6 @@ const volunteerSchema = new mongoose.Schema({
 		type: String,
 		default: 'd'
 	},
-	// set unique
 	contact: {
 		email: {
 			type: String,

@@ -1,13 +1,13 @@
 const express = require('express'),
-	bodyParser = require('body-parser'),
-	mongoose = require('mongoose'),
+    bodyParser = require('body-parser'),
+    mongoose = require('mongoose'),
     logger = require('morgan'),
     seedDb = require('./seed.js'),
     authRoutes = require('./routes/authRoutes'),
     userRoutes = require('./routes/userRoutes'),
     ticketRoutes = require('./routes/ticketRoutes'),
     eventRoutes = require('./routes/eventRoutes'),
-    authMiddleware=require('./app/middleware/middleware')
+    volunteerRoutes = require('./routes/volunteerRoutes');
 
 const app = express();
 
@@ -49,6 +49,7 @@ app.use('/auth/', authRoutes);
 app.use('/user/', userRoutes);
 app.use('/ticket/', ticketRoutes);
 app.use('/event/', eventRoutes);
+app.use('/volunteer/', volunteerRoutes);
 
 //=======================
 // STARTING THE SERVER
