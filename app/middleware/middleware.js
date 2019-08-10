@@ -8,18 +8,20 @@ exports.authVolunteer = (req, res, next) => {
             } else {
                 req.user = tokenData;
                 console.log(req.user);
-                if (tokenData.userType == "volunteer") {
+                if (tokenData.type == "volunteer") {
                     next();
+                } else {
+                    res.status(401).json({
+                        message: "un authenticated"
+                    });
                 }
-                res.status(401).json({
-                    message: "un authenticated"
-                });
             }
         });
+    } else {
+        res.status(401).json({
+            message: "un authenticated"
+        });
     }
-    res.status(401).json({
-        message: "un authenticated"
-    });
 };
 
 exports.authAdmin = (req, res, next) => {
@@ -30,18 +32,20 @@ exports.authAdmin = (req, res, next) => {
             } else {
                 req.user = tokenData;
                 console.log(req.user);
-                if (tokenData.userType == "admin") {
+                if (tokenData.type == "admin") {
                     next();
+                } else {
+                    res.status(401).json({
+                        message: "un authenticated"
+                    });
                 }
-                res.status(401).json({
-                    message: "un authenticated"
-                });
             }
         });
+    } else {
+        res.status(401).json({
+            message: "un authenticated"
+        });
     }
-    res.status(401).json({
-        message: "un authenticated"
-    });
 };
 
 exports.authUser = (req, res, next) => {
@@ -52,18 +56,20 @@ exports.authUser = (req, res, next) => {
             } else {
                 req.user = tokenData;
                 console.log(req.user);
-                if (tokenData.userType == "user") {
+                if (tokenData.type == "user") {
                     next();
+                } else {
+                    res.status(401).json({
+                        message: "un authenticated"
+                    });
                 }
-                res.status(401).json({
-                    message: "un authenticated"
-                });
             }
         });
+    } else {
+        res.status(401).json({
+            message: "un authenticated"
+        });
     }
-    res.status(401).json({
-        message: "un authenticated"
-    });
 };
 
 exports.authAdminVol = (req, res, next) => {
