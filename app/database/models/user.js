@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
 	},
 	contact: {
 		email: {
-			type: String,	
+			type: String,
 			unique: true,
 			sparse: true
 		},
@@ -44,6 +44,10 @@ const userSchema = new mongoose.Schema({
 	csi_member: {
 		type: Boolean,
 		default: false
+	},
+	tickets: {
+		type: mongoose.Schema.Types.ObjectId,
+		default: null
 	}
 });
 

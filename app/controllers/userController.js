@@ -38,9 +38,9 @@ exports.getLogs = async (req, res) => {
 				logList = logList.map(log => {
 					return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name }
 				});
-				res.json({logList})
+				res.json({ logList })
 			} else {
-				res.json({logList});
+				res.json({ logList });
 				return;
 			}
 		} else {
@@ -52,4 +52,11 @@ exports.getLogs = async (req, res) => {
 		return;
 	}
 	res.json({ success: true });
+}
+
+exports.updateUser = async (req, res) => {
+	let role = "admin";// req.body.type/role;
+	if (role == "admin"){
+		
+	}
 }
