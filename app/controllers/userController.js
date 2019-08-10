@@ -110,6 +110,13 @@ exports.getList = async (req, res) => {
 		res.json({ list });
 		return;
 	} else {
-		res.json({ error: 'invalid type' });
+		res.status(401).json({ error: 'unatuhenticated' });
+	}
+}
+
+exports.updateUser = async (req, res) => {
+	let role = "admin";// req.body.type/role;
+	if (role == "admin"){
+		
 	}
 }

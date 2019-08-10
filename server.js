@@ -2,9 +2,10 @@ const express = require('express'),
 	bodyParser = require('body-parser'),
 	mongoose = require('mongoose'),
     logger = require('morgan'),
-    seedDb = require('./seed'),
+    seedDb = require('./seed.js'),
     authRoutes = require('./routes/authRoutes'),
-    userRoutes = require('./routes/userRoutes');
+    userRoutes = require('./routes/userRoutes'),
+    authMiddleware=require('./app/middleware/middleware');
 
 const app = express();
 
