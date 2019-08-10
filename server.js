@@ -5,6 +5,7 @@ const express = require('express'),
     seedDb = require('./seed.js'),
     authRoutes = require('./routes/authRoutes'),
     userRoutes = require('./routes/userRoutes'),
+    ticketRoutes = require('./routes/ticketRoutes');
     authMiddleware=require('./app/middleware/middleware');
 
 const app = express();
@@ -45,10 +46,15 @@ app.use(function (req, res, next) {
 
 app.use('/auth/', authRoutes);
 app.use('/user/', userRoutes);
+app.use('/ticket/', ticketRoutes);
 
 //=======================
 // STARTING THE SERVER
 //=======================
+
+app.get('/', (req, res) => {
+    res.send('Works')
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

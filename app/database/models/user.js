@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
 		default: false
 	},
 	tickets: {
-		type: mongoose.Schema.Types.ObjectId,
+		type: Array,
 		default: null
 	}
 });

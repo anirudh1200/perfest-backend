@@ -7,7 +7,7 @@ exports.authVolunteer = (req, res, next) => {
                 res.status(400);
             } else {
                 req.user = tokenData;
-                console.log(req.user);
+                // console.log(req.user);
                 if (tokenData.type == "volunteer") {
                     next();
                 } else {
@@ -31,7 +31,7 @@ exports.authAdmin = (req, res, next) => {
                 res.status(400);
             } else {
                 req.user = tokenData;
-                console.log(req.user);
+                // console.log(req.user);
                 if (tokenData.type == "admin") {
                     next();
                 } else {
@@ -55,7 +55,7 @@ exports.authUser = (req, res, next) => {
                 res.status(400);
             } else {
                 req.user = tokenData;
-                console.log(req.user);
+                // console.log(req.user);
                 if (tokenData.type == "user") {
                     next();
                 } else {
@@ -79,7 +79,7 @@ exports.authAdminVol = (req, res, next) => {
                 res.status(400);
             } else {
                 req.user = tokenData;
-                console.log(req.user);
+                // console.log(req.user);
                 if (
                     tokenData.type == "volunteer" ||
                     tokenData.type == "admin"
