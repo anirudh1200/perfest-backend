@@ -1,13 +1,13 @@
 const Ticket = require('../database/models/ticket');
 const Volunteer = require('../database/models/volunteer');
+const User = require('../database/models/user');
 
 exports.getLogs = async (req, res) => {
 	let perPage = 25;
-	// Make next line dynamic
-	let role = 'volunteer';
+	let userType = req.user.userType;
 	let page = req.body.page;
 	let logList = [];
-	if (role === 'admin') {
+	if (userType === 'admin') {
 		logList = await Ticket.find({})
 			.select('volunteer_id paid event')
 			.limit(perPage)
@@ -19,15 +19,32 @@ exports.getLogs = async (req, res) => {
 		logList = logList.map(log => {
 			return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name }
 		});
-		res.json({ logList });
-	} else if (role === 'volunteer') {
+		let totalSold = await Ticket.countDocuments();
+		let totalCollected = await Ticket.aggregate([
+			{
+				$group: {
+					_id: '',
+					paid: { $sum: '$paid' }
+				}
+			}, {
+				$project: {
+					_id: 0,
+					paid: '$paid'
+				}
+			}
+		]);
+		totalCollected = totalCollected[0].paid;
+		res.json({ logList, totalSold, totalCollected });
+		return;
+	} else if (userType === 'volunteer') {
 		// Make this dynamic after recognizing user
-		let volunteer_id = '5d4dba0c49aa5904a1c349cd';
+		let volunteer_id = '5d4dc8baf7561527977b8f0c';
 		let volunteer = await Volunteer.findById(volunteer_id).select('events');
 		if (volunteer) {
 			let events = volunteer.events;
+			console.log(events.length)
 			if (events.length > 0) {
-				logList = await Ticket.find({ 'event': { $in: events } })
+				logList = await Ticket.find({ event: { $in: events } })
 					.select('volunteer_id paid event')
 					.limit(perPage)
 					.skip(perPage * page)
@@ -38,9 +55,30 @@ exports.getLogs = async (req, res) => {
 				logList = logList.map(log => {
 					return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name }
 				});
-				res.json({logList})
+				let totalSold = await Ticket.countDocuments({ 'event': { $in: events } });
+				totalCollected = await Ticket.aggregate([
+					{
+						$match: {
+							'event': { $in: events }
+						}
+					},
+					{
+						$group: {
+							_id: '',
+							paid: { $sum: '$paid' }
+						}
+					}, {
+						$project: {
+							_id: 0,
+							paid: '$paid'
+						}
+					}
+				]);
+				totalCollected = totalCollected[0].paid;
+				res.json({ logList, totalSold, totalCollected });
+				return;
 			} else {
-				res.json({logList});
+				res.json({ logList });
 				return;
 			}
 		} else {
@@ -48,8 +86,30 @@ exports.getLogs = async (req, res) => {
 			return;
 		}
 	} else {
-		res.json({ error: 'invalid role' });
+		res.status(401).json({ error: 'invalid role' });
 		return;
 	}
-	res.json({ success: true });
+}
+
+exports.getList = async (req, res) => {
+	let userType = req.body.userType;
+	if (userType === 'user') {
+		try {
+			let list = await User.find()
+				// add/remove fileds from select as per necessity
+				.select('name contact college')
+		} catch (err) {
+
+		}
+		res.json({ list });
+		return;
+	} else if (userType === 'volunteer') {
+		let list = await Volunteer.find()
+			// add/remove fileds from select as per necessity
+			.select('name contact college')
+		res.json({ list });
+		return;
+	} else {
+		res.json({ error: 'invalid type' });
+	}
 }
