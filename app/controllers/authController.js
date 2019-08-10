@@ -43,7 +43,7 @@ exports.login = (req, res, next) => {
             })
     }
     else if (req.body.userType == 'volunteer') {
-        vol.findOne({ 'contact.email': req.body.email } || { 'contact.phone': req.body.phone })
+        volunteer.findOne({ 'contact.email': req.body.email } || { 'contact.phone': req.body.phone })
             .exec()
             .then(user => {
                 // console.log(user);

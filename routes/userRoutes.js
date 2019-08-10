@@ -19,6 +19,6 @@ router.post('/logs', middleware.authAdminVol, userController.getLogs);
 // @return	list(array of objects containing users/volunteers as requested) 
 // @permission	admin
 // TODO			check authorization status annd  permissions
-router.post('/list', authAdmin, middleware.authAdmin, userController.getList);
+router.post('/list', middleware.authAdmin, userController.getList);
 
 module.exports = router;
