@@ -37,8 +37,7 @@ exports.getLogs = async (req, res) => {
 		res.json({ logList, totalSold, totalCollected });
 		return;
 	} else if (type === 'volunteer') {
-		// Make this dynamic after recognizing user
-		let volunteer_id = '5d4dc8baf7561527977b8f0c';
+		let volunteer_id = req.user.userId;
 		let volunteer = await Volunteer.findById(volunteer_id).select('events');
 		if (volunteer) {
 			let events = volunteer.events;
@@ -117,4 +116,33 @@ exports.getList = async (req, res) => {
 	} else {
 		res.status(401).json({ error: 'unatuhenticated' });
 	}
+}
+
+exports.getAllTickets = async (req, res) => {
+	let userId = req.user._id;
+	let ticketList = [];
+	try {
+		ticketList = await Ticket.find({ user_id: userId })
+			.select('valid event')
+			.populate('event')
+	} catch (err) {
+		res.json({ ticketList, error: err });
+	}
+	console.log(ticketList);
+	res.json({ ticketList });
+}
+
+exports.getTicketById = async (req, res) => {
+	let ticketId = req.user.ticketId;
+	let ticket;
+	try {
+		ticket = await Ticket.findOne({ _id: ticketId })
+			.select('valid event price paid balance participantNo date')
+			.populate('event')
+	} catch (err) {
+		console.log(err);
+		res.send({ success: false, error: err });
+		return;
+	}
+	res.send({ ticket });
 }

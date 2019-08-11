@@ -7,11 +7,11 @@ exports.assignEvent = async (req, res) => {
 	let volunteerId = req.body.volunteerId;
 	if (eventId && volunteerId) {
 		await Events.findByIdAndUpdate(
-			{ _id: eventId },
+			eventId,
 			{ $push: { volunteers: volunteerId } }
 		).then(async user => {
 			await Volunteer.findByIdAndUpdate(
-				{ _id: volunteerId },
+				volunteerId,
 				{ $push: { events: eventId } }
 			).then(async volunteer => {
 				res.json({ success: true });
@@ -31,12 +31,12 @@ exports.unassignEvent = async (req, res) => {
 	let volunteerId = req.body.volunteerId;
 	if (eventId && volunteerId) {
 		await Events.findByIdAndUpdate(
-			{ _id: eventId },
+			eventId,
 			{ $pull: { volunteers: volunteerId } }
 		).then(async user => {
 			console.log(user);
 			await Volunteer.findByIdAndUpdate(
-				{ _id: volunteerId },
+				volunteerId,
 				{ $pull: { events: eventId } }
 			).then(async volunteer => {
 				console.log(volunteer);

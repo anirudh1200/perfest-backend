@@ -25,7 +25,7 @@ app.use(logger('dev'));
 
 // for development
 const mongo_uri = 'mongodb://localhost/perfest';
-mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true })
+mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
     .then(() => console.log("Database connected"))
     .catch(console.log);
 seedDb();
