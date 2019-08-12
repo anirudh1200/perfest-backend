@@ -116,7 +116,30 @@ exports.getList = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
 	let role = "admin";// req.body.type/role;
-	if (role == "admin"){
-		
-	}
+	let user = new User();
+	User.findOne({ _id: /*req.user._id*/ "5d4ee972a6a28971e4ba87a1" })
+		.then((user) => {
+			let data = user.toJSON()
+			// console.log("asdasdasd", user);
+			delete data._id
+			delete data.type
+			delete data.csi_member
+			delete data.tickets
+			delete data._v
+			data.contact.phone = "98948298495"
+			data.contact.email = "kolisomesh@gmail.com"
+			console.log(data);
+			let newVolunteer = new Volunteer(data);
+
+			newVolunteer.save()
+				.then(console.log)
+				.catch(console.log);
+		})
+		.catch((err) => {
+			console.log(err);
+			res.status(500);
+		})
+	// User.findOneAndDelete({ _id: "5d4ee972a6a28971e4ba87a1" })
+	// 	.then(console.log)
+	// 	.catch(console.log);
 }

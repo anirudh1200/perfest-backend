@@ -26,7 +26,7 @@ const mongo_uri = 'mongodb://localhost/perfest';
 mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true })
     .then(() => console.log("Database connected"))
     .catch(console.log);
-seedDb();
+// seedDb();
 
 //=======================
 // ALLOW-CORS
