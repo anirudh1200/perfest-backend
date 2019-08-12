@@ -1,11 +1,13 @@
 const express = require('express'),
-	bodyParser = require('body-parser'),
-	mongoose = require('mongoose'),
+    bodyParser = require('body-parser'),
+    mongoose = require('mongoose'),
     logger = require('morgan'),
     seedDb = require('./seed.js'),
     authRoutes = require('./routes/authRoutes'),
     userRoutes = require('./routes/userRoutes'),
-    authMiddleware=require('./app/middleware/middleware');
+    ticketRoutes = require('./routes/ticketRoutes'),
+    eventRoutes = require('./routes/eventRoutes'),
+    volunteerRoutes = require('./routes/volunteerRoutes');
 
 const app = express();
 
@@ -23,7 +25,7 @@ app.use(logger('dev'));
 
 // for development
 const mongo_uri = 'mongodb://localhost/perfest';
-mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true })
+mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
     .then(() => console.log("Database connected"))
     .catch(console.log);
 // seedDb();
@@ -45,10 +47,17 @@ app.use(function (req, res, next) {
 
 app.use('/auth/', authRoutes);
 app.use('/user/', userRoutes);
+app.use('/ticket/', ticketRoutes);
+app.use('/event/', eventRoutes);
+app.use('/volunteer/', volunteerRoutes);
 
 //=======================
 // STARTING THE SERVER
 //=======================
+
+app.get('/', (req, res) => {
+    res.send('Works')
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

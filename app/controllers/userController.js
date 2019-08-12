@@ -4,10 +4,10 @@ const User = require('../database/models/user');
 
 exports.getLogs = async (req, res) => {
 	let perPage = 25;
-	let userType = req.user.userType;
+	let type = req.user.type;
 	let page = req.body.page;
 	let logList = [];
-	if (userType === 'admin') {
+	if (type === 'admin') {
 		logList = await Ticket.find({})
 			.select('volunteer_id paid event')
 			.limit(perPage)
@@ -36,9 +36,8 @@ exports.getLogs = async (req, res) => {
 		totalCollected = totalCollected[0].paid;
 		res.json({ logList, totalSold, totalCollected });
 		return;
-	} else if (userType === 'volunteer') {
-		// Make this dynamic after recognizing user
-		let volunteer_id = '5d4dc8baf7561527977b8f0c';
+	} else if (type === 'volunteer') {
+		let volunteer_id = req.user.userId;
 		let volunteer = await Volunteer.findById(volunteer_id).select('events');
 		if (volunteer) {
 			let events = volunteer.events;
@@ -92,21 +91,26 @@ exports.getLogs = async (req, res) => {
 }
 
 exports.getList = async (req, res) => {
-	let userType = req.body.userType;
-	if (userType === 'user') {
+	let type = req.body.type;
+	let list = [];
+	if (type === 'user') {
 		try {
-			let list = await User.find()
+			list = await User.find()
 				// add/remove fileds from select as per necessity
 				.select('name contact college')
 		} catch (err) {
-
+			res.json({ error: err })
 		}
 		res.json({ list });
 		return;
-	} else if (userType === 'volunteer') {
-		let list = await Volunteer.find()
-			// add/remove fileds from select as per necessity
-			.select('name contact college')
+	} else if (type === 'volunteer') {
+		try {
+			list = await Volunteer.find()
+				// add/remove fileds from select as per necessity
+				.select('name contact college')
+		} catch (err) {
+			res.json({ erroe: err });
+		}
 		res.json({ list });
 		return;
 	} else {
@@ -142,4 +146,31 @@ exports.updateUser = async (req, res) => {
 	// User.findOneAndDelete({ _id: "5d4ee972a6a28971e4ba87a1" })
 	// 	.then(console.log)
 	// 	.catch(console.log);
+exports.getAllTickets = async (req, res) => {
+	let userId = req.user._id;
+	let ticketList = [];
+	try {
+		ticketList = await Ticket.find({ user_id: userId })
+			.select('valid event')
+			.populate('event')
+	} catch (err) {
+		res.json({ ticketList, error: err });
+	}
+	console.log(ticketList);
+	res.json({ ticketList });
+}
+
+exports.getTicketById = async (req, res) => {
+	let ticketId = req.user.ticketId;
+	let ticket;
+	try {
+		ticket = await Ticket.findOne({ _id: ticketId })
+			.select('valid event price paid balance participantNo date')
+			.populate('event')
+	} catch (err) {
+		console.log(err);
+		res.send({ success: false, error: err });
+		return;
+	}
+	res.send({ ticket });
 }

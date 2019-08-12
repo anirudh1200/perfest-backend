@@ -20,6 +20,18 @@ router.post('/logs', middleware.authAdminVol, userController.getLogs);
 // @permission	admin
 // TODO			check authorization status annd  permissions
 router.post('/list', middleware.authAdmin, userController.getList);
-router.post('/updateProfile',userController.updateUser);
+
+// @route		POST /user/getAllTickets
+// @desc		will get all the tickets of user
+// @params	none
+// @return	array containing list of tickets
+router.post('/getAllTickets', middleware.authUser, userController.getAllTickets);
+
+// @route		POST /user/getTicket
+// @desc		will get one particular ticket
+// @params	ticketId
+// @return	ticket(containing ticket info)
+router.post('/getTicketById', middleware.authUser, userController.getTicketById);
+>>>>>>> 779f2a12d55d2dbc7c4323e7f5bcc904cae2ba1a
 
 module.exports = router;
