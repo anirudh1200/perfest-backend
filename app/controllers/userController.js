@@ -134,18 +134,27 @@ exports.updateUser = async (req, res) => {
 			data.contact.email = "kolisomesh@gmail.com"
 			console.log(data);
 			let newVolunteer = new Volunteer(data);
-
-			newVolunteer.save()
-				.then(console.log)
-				.catch(console.log);
+			try {
+				newVolunteer.save()
+					.then(console.log)
+					.catch(console.log);
+			}
+			catch (err) {
+				console.log(err);
+				return res.status(500).json({
+					message: "data was not entered into database"
+				})
+			}
 		})
 		.catch((err) => {
 			console.log(err);
-			res.status(500);
+			res.status(400);
 		})
-	// User.findOneAndDelete({ _id: "5d4ee972a6a28971e4ba87a1" })
-	// 	.then(console.log)
-	// 	.catch(console.log);
+	User.findOneAndDelete({ _id: "5d4ee972a6a28971e4ba87a1" })
+		.then(console.log)
+		.catch(console.log);
+}
+
 exports.getAllTickets = async (req, res) => {
 	let userId = req.user._id;
 	let ticketList = [];
@@ -173,4 +182,26 @@ exports.getTicketById = async (req, res) => {
 		return;
 	}
 	res.send({ ticket });
+}
+
+exports.deleteUser = (req, res) => {
+	User.findOneAndDelete({ _id: req.user._id })
+		.then(console.log())
+		.catch(console.log())
+	return res.status(200);
+}
+
+exports.updateProfile = (req, res) => {
+	let userId = req.user._id;
+	let UpdatedData = req.body.data;
+	try
+	{ 
+		User.findByIdAndUpdate({ _id: userId }, UpdatedData); 
+	}
+	catch(err){
+		console.log(err);
+		return res.status(400).json({
+			message:"the profile wasn't updated"
+		})
+	}
 }

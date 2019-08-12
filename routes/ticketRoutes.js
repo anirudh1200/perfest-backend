@@ -11,4 +11,6 @@ router.post("/issue", middleware.authAdminVol,ticket.issue);
 // @return	siccess(true/false), error(if any)
 router.post('/invalidate', middleware.authAdminVol, ticket.invalidate);
 
+//TODO event scan
+
 module.exports = router;
