@@ -64,7 +64,7 @@ router.post('/deleteUser', middleware.authVolunteer, userController.deleteUser);
 //				 	type: ,
 //				 	csi_member: 
 //				 }
-router.post('/updateProfile', middleware.authuser, userController.updateProfile)
+router.post('/updateProfile', middleware.authUser, userController.updateProfile)
 
 
 
