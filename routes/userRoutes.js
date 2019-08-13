@@ -21,6 +21,12 @@ router.post('/logs', middleware.authAdminVol, userController.getLogs);
 // TODO			check authorization status annd  permissions
 router.post('/list', middleware.authAdmin, userController.getList);
 
+// @route		POST /user/updateUser
+// @desc		change user to volunteer
+// @params		user_id of user to be upgraded
+// @return		status wether upgraded or not
+router.post('/updateUser', middleware.authAdmin, userController.updateUser);
+
 // @route		POST /user/getAllTickets
 // @desc		will get all the tickets of user
 // @params	none
@@ -32,5 +38,34 @@ router.post('/getAllTickets', middleware.authUser, userController.getAllTickets)
 // @params	ticketId
 // @return	ticket(containing ticket info)
 router.post('/getTicketById', middleware.authUser, userController.getTicketById);
+
+// @route		POST /user/deleteUser
+// @desc		will delete user whose _id is there in the token(can be done by volunteer)
+// @params		userID
+// @permission	volunteers
+// @return 		update status either 200 or 422
+router.post('/deleteUser', middleware.authVolunteer, userController.deleteUser);
+
+//@route		POST /user/updateProfile
+//@desc			update users profile
+//@params		token,changes in this format
+//				data={
+//				 	name: ,
+//				 	password: ,
+//				 	contact: {
+//				 		email: ,
+//				 		phone: 
+//				 	},
+//				 	college: {
+//				 		name: ,
+//				 		department: ,
+//				 		year: 
+//				 	},
+//				 	type: ,
+//				 	csi_member: 
+//				 }
+router.post('/updateProfile', middleware.authuser, userController.updateProfile)
+
+
 
 module.exports = router;

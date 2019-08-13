@@ -147,6 +147,3 @@ exports.signup = (req, res, next) => {
     }
 }
 
-exports.updateProfile = (req, res) => {
-    
-}

@@ -58,3 +58,5 @@ exports.invalidate = async (req, res) => {
     }
     res.json({success: false, error: 'tickedId not passed'})
 }
+
+//TODO event scan

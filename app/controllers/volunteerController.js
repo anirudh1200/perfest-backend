@@ -51,3 +51,11 @@ exports.unassignEvent = async (req, res) => {
 		res.json({ success: false, error: 'insufficient data' })
 	}
 }
+
+exports.deleteVolunteer = (req, res) => {
+	let volunteerId=req.user._id;
+	Volunteer.findOneAndDelete({ _id: volunteerId })
+		.then(console.log())
+		.catch(console.log())
+	return res.status(200);
+}
