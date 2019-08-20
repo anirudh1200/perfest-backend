@@ -138,7 +138,7 @@ exports.signup = (req, res, next) => {
         type: false,
         csi_member: req.body.member
     };
-    let newUser = new User(data);
+    let newUser = new user(data);
     try {
         return newUser.save();
     } catch (err) {
@@ -147,3 +147,31 @@ exports.signup = (req, res, next) => {
     }
 }
 
+exports.createanonymous = async (req, res) => {
+    let data;
+    let phone = req.body.phone;
+    let email = req.body.email;
+    let password = req.body.password;
+    if (req.body.phone) {
+        data = {
+            contact: {
+                phone
+            },
+            password
+        }
+    } else {
+        data = {
+            contact: {
+                email
+            },
+            password
+        }
+    }
+    let newUser = new user(data);
+    try {
+        await newUser.save();
+    } catch (err) {
+        res.json({ success: false, error: err });
+    }
+    res.json({ success: true });
+}
