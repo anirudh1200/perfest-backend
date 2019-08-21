@@ -1,14 +1,14 @@
 const Events = require('../database/models/events');
 
 exports.getAllEvents = async (req, res) => {
-	let eventList;
+	let eventList = [];
 	try {
 		eventList = await Events.find();
 	} catch (err) {
-		res.json({ 'error': err, eventList });
+		res.json({ success: false, eventList, 'error': toString(err) });
 		return;
 	}
-	res.json({ eventList });
+	res.json({ success: true, eventList });
 }
 
 exports.getEvent = async (req, res) => {
@@ -28,7 +28,7 @@ exports.addEvent = async (req, res) => {
 	try {
 		await newEvent.save();
 	} catch (err) {
-		res.json({ success: false, error: err });
+		res.json({ success: false, error: toString(err) });
 		return;
 	}
 	res.json({ success: true });
@@ -40,7 +40,8 @@ exports.deleteEvent = async (req, res) => {
 		try {
 			await Events.findByIdAndDelete({ _id: eventId });
 		} catch (err) {
-			res.json({ success: false, error: err });
+			res.json({ success: false, error: toString(err) });
+			return;
 		}
 		res.json({ success: true });
 	} else {
@@ -52,13 +53,13 @@ exports.editEvent = async (req, res) => {
 	let event = req.body.event;
 	if (event) {
 		try {
-			await Events.findByIdAndUpdate({_id: event._id}, event);
+			await Events.findByIdAndUpdate({ _id: event._id }, event);
 		} catch (err) {
-			res.json({ success: false, error: err });
+			res.json({ success: false, error: toString(err) });
 		}
-		res.json({success: true});
+		res.json({ success: true });
 	} else {
-		res.json({success: false, error: 'no data passed'})
+		res.json({ success: false, error: 'no data passed' })
 		return;
 	}
 }

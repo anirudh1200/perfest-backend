@@ -1,125 +1,79 @@
 // To make controller
-const user = require('../database/models/user');
-const volunteer = require('../database/models/volunteer');
-const admin = require('../database/models/admin');
+const User = require('../database/models/user');
+const Volunteer = require('../database/models/volunteer');
+const Admin = require('../database/models/admin');
 const jwt = require('jsonwebtoken');
 
-exports.login = (req, res, next) => {
-    if (req.body.userType == 'user') {
-        user.findOne({ 'contact.email': req.body.user.email } || { 'contact.phone': req.body.user.phone })
-            .exec()
-            .then(user => {
-                // console.log(user);
-                // res.json(user);
-                if (!user) {
-                    return res.status(401).json({
-                        message: "user not found",
-                    })
+exports.login = async (req, res) => {
+    let user = null;
+    let type = null;
+    let token = '';
+    try {
+        if (req.body.phone) {
+            user = await User.findOne({ 'contact.phone': req.body.phone });
+        } else {
+            user = await User.findOne({ 'contact.email': req.body.email });
+        }
+        if (user) {
+            if (user.password === req.body.password) {
+                type = 'user';
+            } else {
+                res.status(401).json({ success: false, token, error: 'invalid credentials' });
+                return;
+            }
+        } else {
+            try {
+                if (req.body.phone) {
+                    user = await Volunteer.findOne({ 'contact.phone': req.body.phone });
+                } else {
+                    user = await Volunteer.findOne({ 'contact.email': req.body.email });
                 }
-                // console.log(user);
-                // console.log(req);
-                if (user.password == req.body.password) {
-                    let jwt_token = jwt.sign({
-
-                        type: user.type,
-                        userId: user._id,
-                    }, "secret", {
-                            expiresIn: "1d",
-                        })
-                    // console.log(process.env.JWT_KEY)
-                    return res.status(200).json({
-                        message: "successfull",
-                        token: jwt_token
-                    });
+                if (user) {
+                    if (user.password === req.body.password) {
+                        type = 'volunteer';
+                    } else {
+                        res.status(401).json({ success: false, token, error: 'invalid credentials' });
+                        return;
+                    }
+                } else {
+                    try {
+                        if (req.body.phone) {
+                            user = await Admin.findOne({ 'contact.phone': req.body.phone });
+                        } else {
+                            user = await Admin.findOne({ 'contact.email': req.body.email });
+                        }
+                        if (user) {
+                            if (user.password === req.body.password) {
+                                type = 'admin';
+                            } else {
+                                res.status(401).json({ success: false, token, error: 'invalid credentials' });
+                                return;
+                            }
+                        } else {
+                            res.status(401).json({ success: false, token, error: 'no user found' });
+                            return;
+                        }
+                    } catch (err) {
+                        res.json({ success: false, token, error: toString(err) });
+                        return;
+                    }
                 }
-                else {
-                    return res.status(401).json({
-                        message: "unauth"
-                    })
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            })
+            } catch (err) {
+                res.json({ success: false, token, error: toString(err) });
+                return;
+            }
+        }
+    } catch (err) {
+        res.json({ success: false, token, error: toString(err) });
+        return;
     }
-    else if (req.body.userType == 'volunteer') {
-        volunteer.findOne({ 'contact.email': req.body.email } || { 'contact.phone': req.body.phone })
-            .exec()
-            .then(user => {
-                // console.log(user);
-                // res.json(user);
-                if (!user) {
-                    return res.status(401).json({
-                        message: "user not found",
-                    })
-                }
-                // console.log(user);
-                // console.log(req);
-                if (user.password == req.body.password) {
-                    let jwt_token = jwt.sign({
-                        type: "volunteer",
-                        userId: user._id,
-                    }, "secret", {
-                            expiresIn: "1d",
-                        })
-                    // console.log(process.env.JWT_KEY)
-                    return res.status(200).json({
-                        message: "successfull",
-                        token: jwt_token
-                    });
-                }
-                else {
-                    return res.status(401).json({
-                        message: "unauth"
-                    })
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-    }
-    else if (req.body.userType == 'admin') {
-        admin.findOne({ 'contact.email': req.body.email } || { 'contact.phone': req.body.phone })
-            .exec()
-            .then(user => {
-                // console.log(user);
-                // res.json(user);
-                if (!user) {
-                    return res.status(401).json({
-                        message: "user not found",
-                    })
-                }
-                // console.log(user);
-                // console.log(req);
-                if (user.password == req.body.password) {
-                    let jwt_token = jwt.sign({
-
-                        type: "admin",
-                        userId: user._id,
-                    }, "secret", {
-                            expiresIn: "1d",
-                        })
-                    // console.log(process.env.JWT_KEY)
-                    return res.status(200).json({
-                        message: "successfull",
-                        token: jwt_token
-                    });
-                }
-                else {
-                    return res.status(401).json({
-                        message: "unauth"
-                    })
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-    }
-    else {
-        return res.status(400).json({
-            message: "hello world"
+    let jwt_token = jwt.sign({
+        type,
+        userId: user._id,
+    }, "secret", {
+            expiresIn: "1d",
         });
-    }
+    res.json({ success: true, token: jwt_token });
 }
 
 exports.signup = (req, res, next) => {
@@ -138,7 +92,7 @@ exports.signup = (req, res, next) => {
         type: false,
         csi_member: req.body.member
     };
-    let newUser = new user(data);
+    let newUser = new User(data);
     try {
         return newUser.save();
     } catch (err) {
@@ -167,11 +121,12 @@ exports.createanonymous = async (req, res) => {
             password
         }
     }
-    let newUser = new user(data);
+    let newUser = new User(data);
     try {
         await newUser.save();
     } catch (err) {
-        res.json({ success: false, error: err });
+        res.json({ success: false, error: toString(err) });
+        return;
     }
     res.json({ success: true });
 }
