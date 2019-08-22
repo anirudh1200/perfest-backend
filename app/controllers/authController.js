@@ -94,11 +94,12 @@ exports.signup = (req, res, next) => {
     };
     let newUser = new User(data);
     try {
-        return newUser.save();
+        await newUser.save();
     } catch (err) {
-        console.log(err);
+        res.json({ success: false, error: toString(err) });
         return;
     }
+    res.json({ success: true });
 }
 
 exports.createanonymous = async (req, res) => {

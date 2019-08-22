@@ -5,7 +5,7 @@ exports.getAllEvents = async (req, res) => {
 	try {
 		eventList = await Events.find();
 	} catch (err) {
-		res.json({ success: false, eventList, 'error': toString(err) });
+		res.json({ success: false, eventList, error: toString(err) });
 		return;
 	}
 	res.json({ success: true, eventList });
