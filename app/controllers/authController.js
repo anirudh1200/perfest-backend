@@ -76,7 +76,7 @@ exports.login = async (req, res) => {
     res.json({ success: true, token: jwt_token });
 }
 
-exports.signup = (req, res, next) => {
+exports.signup = async (req, res, next) => {
     let data = {
         name: req.body.name,
         password: req.body.password,

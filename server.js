@@ -24,9 +24,9 @@ app.use(logger('dev'));
 //=======================
 
 // for development
-const mongo_uri = 'mongodb://localhost/perfest';
+// const mongo_uri = 'mongodb://localhost/perfest';
 // for testing, using heroku congfig vars
-// const mongo_uri = process.env.DATABASE_URL;
+const mongo_uri = process.env.DATABASE_URL;
 mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
     .then(() => console.log("Database connected"))
     .catch(console.log);
