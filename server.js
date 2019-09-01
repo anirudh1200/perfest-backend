@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express'),
     bodyParser = require('body-parser'),
     mongoose = require('mongoose'),
@@ -23,10 +25,14 @@ app.use(logger('dev'));
 // DATABASE CONFIG
 //=======================
 
-// for development
-// const mongo_uri = 'mongodb://localhost/perfest';
-// for testing, using heroku congfig vars
-const mongo_uri = process.env.DATABASE_URL;
+let mongo_uri;
+
+if (process.env.LOCALDEV === 'true') {
+    mongo_uri = 'mongodb://localhost/perfest';
+} else {
+    mongo_uri = process.env.DATABASE_URL;
+}
+
 mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
     .then(() => console.log("Database connected"))
     .catch(console.log);

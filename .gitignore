@@ -1,2 +1,7 @@
 /node_modules
 /login-token.txt
+.env
+
+# lock files
+package-lock.json
+yarn.lock
