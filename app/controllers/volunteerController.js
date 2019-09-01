@@ -1,6 +1,5 @@
 const Events = require('../database/models/events');
 const Volunteer = require('../database/models/volunteer');
-const mongoose = require('mongoose');
 
 exports.assignEvent = async (req, res) => {
 	let eventId = req.body.eventId;
@@ -53,9 +52,9 @@ exports.unassignEvent = async (req, res) => {
 }
 
 exports.deleteVolunteer = (req, res) => {
-	let volunteerId=req.user._id;
-	Volunteer.findOneAndDelete({ _id: volunteerId })
-		.then(console.log())
-		.catch(console.log())
+	let volunteerId = req.body.volunteerId;
+	Volunteer.findOneAndDelete({ volunteerId })
+		.then(console.log)
+		.catch(console.log)
 	return res.status(200);
 }

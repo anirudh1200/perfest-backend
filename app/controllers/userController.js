@@ -34,14 +34,16 @@ exports.getLogs = async (req, res) => {
 			}
 		]);
 		totalCollected = totalCollected[0].paid;
-		res.json({ logList, totalSold, totalCollected });
+		res.json({ success: true, logList, totalSold, totalCollected });
 		return;
 	} else if (type === 'volunteer') {
 		let volunteer_id = req.user.userId;
+		let logList = [];
+		let totalSold = 0;
+		let totalCollected = 0;
 		let volunteer = await Volunteer.findById(volunteer_id).select('events');
 		if (volunteer) {
 			let events = volunteer.events;
-			console.log(events.length)
 			if (events.length > 0) {
 				logList = await Ticket.find({ event: { $in: events } })
 					.select('volunteer_id paid event')
@@ -54,7 +56,7 @@ exports.getLogs = async (req, res) => {
 				logList = logList.map(log => {
 					return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name }
 				});
-				let totalSold = await Ticket.countDocuments({ 'event': { $in: events } });
+				totalSold = await Ticket.countDocuments({ 'event': { $in: events } });
 				totalCollected = await Ticket.aggregate([
 					{
 						$match: {
@@ -77,15 +79,15 @@ exports.getLogs = async (req, res) => {
 				res.json({ logList, totalSold, totalCollected });
 				return;
 			} else {
-				res.json({ logList });
+				res.json({ success: true, logList });
 				return;
 			}
 		} else {
-			res.json({ error: 'invalid volunteer' });
+			res.json({ success: false, error: 'invalid volunteer' });
 			return;
 		}
 	} else {
-		res.status(401).json({ error: 'invalid role' });
+		res.status(401).json({ success: false, error: 'invalid role' });
 		return;
 	}
 }
@@ -99,9 +101,9 @@ exports.getList = async (req, res) => {
 				// add/remove fileds from select as per necessity
 				.select('name contact college')
 		} catch (err) {
-			res.json({ error: err })
+			res.json({ success: false, list, error: toString(err) })
 		}
-		res.json({ list });
+		res.json({ success: true, list });
 		return;
 	} else if (type === 'volunteer') {
 		try {
@@ -109,50 +111,63 @@ exports.getList = async (req, res) => {
 				// add/remove fileds from select as per necessity
 				.select('name contact college')
 		} catch (err) {
-			res.json({ erroe: err });
+			res.json({ success: false, list, error: toString(err) });
 		}
-		res.json({ list });
+		res.json({ success: true, list });
 		return;
 	} else {
-		res.status(401).json({ error: 'unatuhenticated' });
+		res.status(401).json({ success: false, list, error: 'unatuhenticated' });
 	}
 }
 
 exports.updateUser = async (req, res) => {
-	let role = "admin";// req.body.type/role;
+	let role = req.user.type;
 	let user = new User();
-	User.findOne({ _id: /*req.user._id*/ "5d4ee972a6a28971e4ba87a1" })
+	User.findOne({ _id: req.user._id })
 		.then((user) => {
 			let data = user.toJSON()
-			// console.log("asdasdasd", user);
 			delete data._id
 			delete data.type
 			delete data.csi_member
 			delete data.tickets
 			delete data._v
-			data.contact.phone = "98948298495"
-			data.contact.email = "kolisomesh@gmail.com"
-			console.log(data);
+			if (!data.contact.phone) {
+				res.json({ success: false, error: 'no phone number' });
+				return;
+			} else if (!data.contact.email) {
+				res.json({ success: false, error: 'no email' });
+				return;
+			}
 			let newVolunteer = new Volunteer(data);
 			try {
 				newVolunteer.save()
-					.then(console.log)
-					.catch(console.log);
+					.then(a => {
+						User.findOneAndDelete({ _id: req.user._id })
+							.then(a => {
+								res.json({ success: true });
+								return;
+							})
+							.catch(err => {
+								res.json({ success: false, error: toString(err) });
+								return;
+							});
+					})
+					.catch(err => {
+						res.json({ success: false, error: toString(err) });
+						return;
+					});
 			}
 			catch (err) {
-				console.log(err);
-				return res.status(500).json({
-					message: "data was not entered into database"
-				})
+				err => {
+					res.json({ success: false, error: toString(err) });
+					return;
+				}
 			}
 		})
-		.catch((err) => {
-			console.log(err);
-			res.status(400);
-		})
-	User.findOneAndDelete({ _id: "5d4ee972a6a28971e4ba87a1" })
-		.then(console.log)
-		.catch(console.log);
+		.catch(err => {
+			res.json({ success: false, error: toString(err) });
+			return;
+		});
 }
 
 exports.getAllTickets = async (req, res) => {
@@ -163,25 +178,26 @@ exports.getAllTickets = async (req, res) => {
 			.select('valid event')
 			.populate('event')
 	} catch (err) {
-		res.json({ ticketList, error: err });
+		res.json({ success: false, ticketList, error: toString(err) });
+		return;
 	}
 	console.log(ticketList);
-	res.json({ ticketList });
+	res.json({ success: true, ticketList });
 }
 
 exports.getTicketById = async (req, res) => {
 	let ticketId = req.user.ticketId;
-	let ticket;
+	let ticket = '';
 	try {
 		ticket = await Ticket.findOne({ _id: ticketId })
 			.select('valid event price paid balance participantNo date')
 			.populate('event')
 	} catch (err) {
 		console.log(err);
-		res.send({ success: false, error: err });
+		res.json({ success: false, ticket, error: toString(err) });
 		return;
 	}
-	res.send({ ticket });
+	res.json({ success: true, ticket });
 }
 
 exports.deleteUser = (req, res) => {
@@ -194,14 +210,13 @@ exports.deleteUser = (req, res) => {
 exports.updateProfile = (req, res) => {
 	let userId = req.user._id;
 	let UpdatedData = req.body.data;
-	try
-	{ 
-		User.findByIdAndUpdate({ _id: userId }, UpdatedData); 
+	try {
+		User.findByIdAndUpdate({ _id: userId }, UpdatedData);
 	}
-	catch(err){
+	catch (err) {
 		console.log(err);
-		return res.status(400).json({
-			message:"the profile wasn't updated"
-		})
+		res.json({ success: false, error: toString(err) });
+		return;
 	}
+	res.json({ success: true });
 }
