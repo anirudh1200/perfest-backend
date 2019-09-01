@@ -1,2 +1,8 @@
+#dependencies
 /node_modules
+
+#misc
 /login-token.txt
+/.env
+/.env.default
+/mail.sh

@@ -7,6 +7,7 @@ const express = require('express'),
     userRoutes = require('./routes/userRoutes'),
     ticketRoutes = require('./routes/ticketRoutes'),
     eventRoutes = require('./routes/eventRoutes'),
+    mailRoutes = require('./routes/mailRoutes'),
     volunteerRoutes = require('./routes/volunteerRoutes');
 
 const app = express();
@@ -32,7 +33,7 @@ mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true, useFi
     .catch(console.log);
 seedDb();
 
-`//=======================
+//=======================
 // ALLOW-CORS
 //=======================
 // For development
@@ -41,7 +42,7 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
     next();
-});`
+});
 
 //=======================
 // ROUTES
@@ -52,6 +53,7 @@ app.use('/user/', userRoutes);
 app.use('/ticket/', ticketRoutes);
 app.use('/event/', eventRoutes);
 app.use('/volunteer/', volunteerRoutes);
+app.use('/mail/', mailRoutes);
 
 //=======================
 // STARTING THE SERVER

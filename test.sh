@@ -1,0 +1,3 @@
+SOMESH="someshkoli"
+
+echo $SOMESH
