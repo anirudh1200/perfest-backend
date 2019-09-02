@@ -6,7 +6,7 @@
 #misc
 /mail.sh
 /test.sh
-
+/.env.default
 # lock files
 /package-lock.json
 /yarn.lock
