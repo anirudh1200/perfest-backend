@@ -1,8 +1,8 @@
 const user = require('../database/models/user'),
     mailgun = require('mailgun-js');
-    require('dotenv').config();
+require('dotenv').config();
 //MAILGUN CONFIGURATION
-    const mail = new mailgun({
+const mail = new mailgun({
     apiKey: process.env.MAILGUN_API,
     domain: process.env.MAIL_DOMAIN
 });

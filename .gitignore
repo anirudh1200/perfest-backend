@@ -1,8 +1,12 @@
 #dependencies
 /node_modules
-
-#misc
 /login-token.txt
 /.env
-/.env.default
+
+#misc
 /mail.sh
+/test.sh
+
+# lock files
+/package-lock.json
+/yarn.lock
