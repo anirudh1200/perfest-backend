@@ -1,6 +1,7 @@
 const cuid = require("cuid");
 const Ticket = require("../database/models/ticket");
 const User = require("../database/models/user");
+const mail = require('../controllers/mailController')
 
 exports.issue = async (req, res) => {
     //Expecting these params from frontend when issuing a ticket
@@ -11,30 +12,41 @@ exports.issue = async (req, res) => {
         let usr = await User.findOne(
             { "contact.email": email } || { "contact.phone": phone }
         );
-
         if (usr) {
             //If the user already exists, create a new ticket with the event id supplied
+            console.log('hello00')
+            // console.log(usr)
             let newTicket = new Ticket({
                 user_id: usr._id,
                 url: cuid.slug(),
                 event: event_id,
-                volunteer_id: req.user.userId,
-                price,
-                paid,
-                participantNo
+                volunteer_id:req.user.userId ,
+                price:price,
+                paid:paid,
+                participantNo:participantNo
             });
-
+            // console.log(newTicket)
+            // console.log(usr._id)
             newTicket.save(async (err, ticket) => {
                 if (err) return res.status(500).json({ 'error': err });
-
                 //Also add this newly created ticket to Users document.
                 try {
-                    let updatedUser = await User.findOneAndUpdate({ 'contact.email': email } || { 'contact.phone': phone }, { $push: { tickets: ticket._id } })
+                    let updatedUser =await User.findOneAndUpdate(
+                        {
+                            'contact.email': email
+                        } ||
+                        { 'contact.phone': phone },
+                        {
+                            $push: { tickets: ticket._id }
+                        }
+                    )
+                    mail.eventConfirmation(usr);
                     res.send({ 'status': 'success' });
                 } catch (err) {
                     res.send(err);
                 }
             })
+
         }
     } catch (err) {
         res.send(err);

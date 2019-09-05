@@ -43,7 +43,7 @@ const ticketSchema = new mongoose.Schema({
 	date: {
 		type: Date,
 		default: new Date()
-	}
+	},
 });
 
 ticketSchema.pre('save', function(next) {

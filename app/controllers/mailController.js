@@ -1,4 +1,4 @@
-const user = require('../database/models/user'),
+const User = require('../database/models/user'),
     mailgun = require('mailgun-js');
 require('dotenv').config();
 //MAILGUN CONFIGURATION
@@ -7,28 +7,29 @@ const mail = new mailgun({
     domain: process.env.MAIL_DOMAIN
 });
 //add controllers below
-exports.eventConfirmation = async (req, res) => {
-    userId = req.user.user._id;
-    userEmail = null;
-    userName = null;
+exports.eventConfirmation = async (user) => {
+    
+    let userId = user._id;
+    let userEmail = user.contact.email;
+    let userName = user.name;
 
-    user.findById({ _id: userId }, (user) => {
-        userEmail = user.contact.email;
-        user.userName = user.name
-    })
+    let generated_link="www.perfest.co/u/"+Math.random().toString(36).substring(5);
     var data = {
         from: 'Somesh Koli <kolisomesh27@gmail.com>',
-        to: userEmail,
+        to:  userEmail,
+        // to: userEmail,
         subject: 'Hello',
-        text: 'Testing some Mailgun awesomeness!'
+        text: generated_link
     }
-    sendEmail(data);
-    res.send("hello");
+    console.log(generated_link)
+    await mail.messages().send(data, (error, body) => {
+        console.log(error, body)
+    })
+
+    return "success"
 }
 
 //mail function
 const sendEmail = (data) => {
-    mail.messages().send(data, (error, body) => {
-        console.log(error, body)
-    })
+
 }

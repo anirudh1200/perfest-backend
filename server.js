@@ -9,7 +9,6 @@ const express = require('express'),
     userRoutes = require('./routes/userRoutes'),
     ticketRoutes = require('./routes/ticketRoutes'),
     eventRoutes = require('./routes/eventRoutes'),
-    mailRoutes = require('./routes/mailRoutes'),
     volunteerRoutes = require('./routes/volunteerRoutes');
 
 const app = express();
@@ -37,7 +36,7 @@ if (process.env.LOCALDEV === 'true') {
 mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
     .then(() => console.log("Database connected"))
     .catch(console.log);
-seedDb();
+// seedDb();
 
 //=======================
 // ALLOW-CORS
@@ -59,7 +58,6 @@ app.use('/user/', userRoutes);
 app.use('/ticket/', ticketRoutes);
 app.use('/event/', eventRoutes);
 app.use('/volunteer/', volunteerRoutes);
-app.use('/mail/', mailRoutes);
 
 //=======================
 // STARTING THE SERVER

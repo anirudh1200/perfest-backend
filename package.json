@@ -15,6 +15,7 @@
     "cuid": "^2.1.6",
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
+    "googleapis": "^42.0.0",
     "jsonwebtoken": "^8.5.1",
     "mailgun-js": "^0.22.0",
     "mongoose": "^5.6.8",
