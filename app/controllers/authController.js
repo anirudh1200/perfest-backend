@@ -16,10 +16,18 @@ const sendToken = (res, user, type) => {
     res.json({ success: true, token: jwt_token });
 }
 
-const checkUser = (req, res, user, token, error) => {
+const checkUser = (req, res, user, token, type) => {
     if (user) {
+        // To be userd after hashing is enabled
+        // bcrypt.compare(myPlaintextPassword, hash, function (err, res) {
+        //     if (res) {
+        //         sendToken(res, user, type);
+        //     } else {
+        //         res.status(401).json({ success: false, token, error: 'invalid credentials' });
+        //     }
+        //     return true;
+        // });
         if (user.password === req.body.password) {
-            let type = 'user';
             sendToken(res, user, type);
         } else {
             res.status(401).json({ success: false, token, error: 'invalid credentials' });
@@ -36,7 +44,7 @@ exports.login = async (req, res) => {
             res.json({ success: false, token, error: err });
             error = true;
         });
-    if (error || checkUser(req, res, user, token)) {
+    if (error || checkUser(req, res, user, token, 'user')) {
         return;
     }
     user = await Volunteer.findOne({ 'contact.email': req.body.email })
@@ -44,7 +52,7 @@ exports.login = async (req, res) => {
             res.json({ success: false, token, error: err });
             error = true;
         });
-    if (error || checkUser(req, res, user, token)) {
+    if (error || checkUser(req, res, user, token, 'volunteer')) {
         return;
     }
     user = await Admin.findOne({ 'contact.email': req.body.email })
@@ -52,7 +60,7 @@ exports.login = async (req, res) => {
             res.json({ success: false, token, error: err });
             error = true;
         });
-    if (error || checkUser(req, res, user, token)) {
+    if (error || checkUser(req, res, user, token, 'admin')) {
         return;
     }
     res.status(401).json({ success: false, token, error: 'no user found' });
@@ -87,36 +95,60 @@ exports.signup = async (req, res, next) => {
 
 }
 
-exports.createanonymous = async (req, res) => {
+exports.createUser = async (req, res) => {
     let data;
     let phone = req.body.phone;
     let email = req.body.email;
     let password = req.body.password;
-    bcrypt.hash(password, saltRounds, async (err, hash) => {
-        if (!err) {
-            if (req.body.phone) {
-                data = {
-                    contact: {
-                        phone
-                    },
-                    password: hash
-                }
-            } else {
-                data = {
-                    contact: {
-                        email
-                    },
-                    password: hash
-                }
-            }
-            let newUser = new User(data);
-            try {
-                await newUser.save();
-            } catch (err) {
-                res.json({ success: false, error: err });
-                return;
-            }
-            res.json({ success: true });
+    // To be userd after hashing is enabled
+    // bcrypt.hash(password, saltRounds, async (err, hash) => {
+    //     if (!err) {
+    //         if (req.body.phone) {
+    //             data = {
+    //                 contact: {
+    //                     phone
+    //                 },
+    //                 password: hash
+    //             }
+    //         } else {
+    //             data = {
+    //                 contact: {
+    //                     email
+    //                 },
+    //                 password: hash
+    //             }
+    //         }
+    //         let newUser = new User(data);
+    //         try {
+    //             await newUser.save();
+    //         } catch (err) {
+    //             res.json({ success: false, error: err });
+    //             return;
+    //         }
+    //         res.json({ success: true });
+    //     }
+    // });
+    if (req.body.phone) {
+        data = {
+            contact: {
+                phone
+            },
+            password
         }
-    });
+    } else {
+        data = {
+            contact: {
+                email
+            },
+            password
+        }
+    }
+    let newUser = new User(data);
+    try {
+        await newUser.save();
+    } catch (err) {
+        res.json({ success: false, error: err });
+        return;
+    }
+    res.json({ success: true });
 }

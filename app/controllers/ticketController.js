@@ -4,7 +4,7 @@ const User = require("../database/models/user");
 
 exports.issue = async (req, res) => {
     //Expecting these params from frontend when issuing a ticket
-    let { name, email, phone, event_id, price, paid, participantNo } = req.body;
+    let { email, event_id, price, paid, participantNo } = req.body;
 
     //Check if user with following email or phone already exists
     try {
@@ -43,7 +43,7 @@ exports.issue = async (req, res) => {
 
 exports.invalidate = async (req, res) => {
     let ticketId = req.body.ticketId;
-    if(ticketId){
+    if (ticketId) {
         try {
             await Ticket.findByIdAndUpdate(
                 ticketId,
@@ -56,7 +56,7 @@ exports.invalidate = async (req, res) => {
         res.json({ success: true });
         return;
     }
-    res.json({success: false, error: 'tickedId not passed'})
+    res.json({ success: false, error: 'tickedId not passed' })
 }
 
 //TODO event scan

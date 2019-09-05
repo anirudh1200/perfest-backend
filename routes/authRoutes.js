@@ -19,10 +19,10 @@ router.post("/login", auth.login);
 // @permission	volunteer & users
 router.post("/signup", auth.signup);
 
-// @route		POST /user/createanonymous
-// @desc		will create an anonymous user
+// @route		POST /user/createUser
+// @desc		will create an user
 // @params	phone/email and password
 // @retrun	status
-router.post("/createanonymous", auth.createanonymous);
+router.post("/createanonymous", auth.createUser);
 
 module.exports = router;
