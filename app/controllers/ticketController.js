@@ -14,19 +14,15 @@ exports.issue = async (req, res) => {
         );
         if (usr) {
             //If the user already exists, create a new ticket with the event id supplied
-            console.log('hello00')
-            // console.log(usr)
             let newTicket = new Ticket({
                 user_id: usr._id,
                 url: cuid.slug(),
                 event: event_id,
-                volunteer_id:req.user.userId ,
+                volunteer_id:/*req.user.userId*/ "5d6f8228794492236066eb9a" ,
                 price:price,
                 paid:paid,
                 participantNo:participantNo
             });
-            // console.log(newTicket)
-            // console.log(usr._id)
             newTicket.save(async (err, ticket) => {
                 if (err) return res.status(500).json({ 'error': err });
                 //Also add this newly created ticket to Users document.
@@ -40,7 +36,7 @@ exports.issue = async (req, res) => {
                             $push: { tickets: ticket._id }
                         }
                     )
-                    mail.eventConfirmation(usr);
+                    mail.eventConfirmation(usr,ticket);
                     res.send({ 'status': 'success' });
                 } catch (err) {
                     res.send(err);
