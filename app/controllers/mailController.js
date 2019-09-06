@@ -13,7 +13,7 @@ exports.eventConfirmation = async (user) => {
     let userEmail = user.contact.email;
     let userName = user.name;
 
-    let generated_link="www.perfest.co/u/"+Math.random().toString(36).substring(5);
+    let generated_link="www.perfest.co/t/"+Math.random().toString(36).substring(5);
     var data = {
         from: 'Somesh Koli <kolisomesh27@gmail.com>',
         to:  userEmail,
