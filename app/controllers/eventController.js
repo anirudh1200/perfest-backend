@@ -11,6 +11,19 @@ exports.getAllEvents = async (req, res) => {
 	res.json({ success: true, eventList });
 }
 
+exports.getAllEventsForDropdown = async (req, res) => {
+	let eventList = [];
+	try {
+		eventList = await Events
+			.find()
+			.select('name cost_1 cost_2 cost_4')
+	} catch (err) {
+		res.json({ success: false, eventList, error: toString(err) });
+		return;
+	}
+	res.json({ success: true, eventList });
+}
+
 exports.getEvent = async (req, res) => {
 	let eventId = req.params.id;
 	let event = null;

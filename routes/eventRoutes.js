@@ -9,6 +9,11 @@ const middleware = require('../app/middleware/middleware');
 // @return	eventList(array of all events)
 router.get('/list', eventController.getAllEvents);
 
+//@route		GET /event/dropdownList
+// @desc		will get all events(minified for dropdown)
+// @return	eventList(_is, name, cost)
+router.get('/dropdownList', eventController.getAllEventsForDropdown);
+
 // @route		GET /event/:id
 // @desc		will get a particular event
 // @return	event(the event info)

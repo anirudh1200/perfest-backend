@@ -25,11 +25,14 @@ exports.eventConfirmation = async (user, Ticket) => {
     //to be updated in databse
     await ticket.findByIdAndUpdate(Ticket._id, { url: genString }, (err) => { console.log });
     // console.log(generated_link)
-    await mail.messages().send(data, (error, body) => {
-        console.log(error, body)
-    })
-
-    return "success"
+    mail.messages().send(data, (error, body) => {
+        if(error){
+            console.log(error, body);
+            return false;
+        } else {
+            return true;
+        }
+    });
 }
 
 //mail function

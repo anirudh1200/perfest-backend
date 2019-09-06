@@ -50,7 +50,7 @@ let eventData = [
 		venue: 'mumbai'
 	},
 	{
-		name: 'Code Arena',
+		name: 'Highway to Heaven',
 		description: 'A coding game',
 		date: new Date(),
 		cost_1: 30,
