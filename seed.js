@@ -59,6 +59,17 @@ let eventData = [
 		volunteers: [],
 		image: './data/images/event1.jpg',
 		venue: 'mumbai'
+	},
+	{
+		name: 'Ramraoadik epic 3.0',
+		description: 'A coding game',
+		date: new Date(),
+		cost_1: 19,
+		cost_2: 29,
+		cost_4: 89,
+		volunteers: [],
+		image: './data/images/event1.jpg',
+		venue: 'mumbai'
 	}
 ]
 

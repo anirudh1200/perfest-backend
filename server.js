@@ -36,7 +36,7 @@ if (process.env.LOCALDEV === 'true') {
 mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
     .then(() => console.log("Database connected"))
     .catch(console.log);
-// seedDb();
+seedDb();
 
 //=======================
 // ALLOW-CORS
