@@ -49,7 +49,7 @@ exports.issue = async (req, res) => {
             let result;
             try {
                 result = await mail.eventConfirmation(usr, ticket);
-                if(!result){
+                if (!result) {
                     res.json({ success: result, error: 'mail issue' });
                     return;
                 }
@@ -86,7 +86,39 @@ exports.invalidate = async (req, res) => {
         res.json({ success: true });
         return;
     }
-    res.json({ success: false, error: 'tickedId not passed' })
+    res.json({ success: false, error: 'tickedId not passed' });
+}
+
+exports.getDetails = async (req, res) => {
+    let ticketUrl = req.body.ticketUrl;
+    if (ticketUrl) {
+        try {
+            let ticket = await Ticket.findOne({ url: ticketUrl })
+                .populate('user_id')
+                .populate('event');
+            let userType = ticket.user_id.type;
+            let { event } = ticket;
+            let eventDetails = {
+                name: event.name,
+                date: event.date,
+                venue: event.venue,
+            }
+            let ticketDetails = {
+                _id: ticket._id,
+                price: ticket.price,
+                paid: ticket.paid,
+                balance: ticket.balance,
+                participantNo: ticket.participantNo,
+                valid: ticket.valid,
+            }
+            res.json({ success: true, userType, eventDetails, ticketDetails });
+            return;
+        } catch (err) {
+            res.json({ success: false, error: err });
+            return;
+        }
+    }
+    res.json({ success: false, error: 'tickedId not passed' });
 }
 
 //TODO event scan
