@@ -49,9 +49,14 @@ exports.issue = async (req, res) => {
             let result;
             try {
                 result = await mail.eventConfirmation(usr, ticket);
-                if(!result) res.json({ success: result, error: 'mail issue' });
+                if(!result){
+                    res.json({ success: result, error: 'mail issue' });
+                    return;
+                }
                 res.json({ success: result });
+                return;
             } catch (err) {
+                console.log(err);
                 res.json({ success: false, error: err });
                 return;
             }

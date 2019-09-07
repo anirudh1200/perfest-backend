@@ -9,7 +9,6 @@ const mail = new mailgun({
 });
 //add controllers below
 exports.eventConfirmation = async (user, Ticket) => {
-
     let userId = user._id;
     let userEmail = user.contact.email;
     let userName = user.name;
