@@ -7,6 +7,6 @@
 /mail.sh
 /test.sh
 /.env.default
-# lock files
+# npm lock files (use yarn by default)
 /package-lock.json
-/yarn.lock
+
