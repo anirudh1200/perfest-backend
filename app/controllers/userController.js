@@ -7,6 +7,8 @@ exports.getLogs = async (req, res) => {
 	let type = req.user.type;
 	let page = req.body.page;
 	let logList = [];
+	let totalSold = 0;
+	let totalCollected = 0;
 	if (type === 'admin') {
 		logList = await Ticket.find({})
 			.select('volunteer_id paid event')
@@ -19,8 +21,8 @@ exports.getLogs = async (req, res) => {
 		logList = logList.map(log => {
 			return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name }
 		});
-		let totalSold = await Ticket.countDocuments();
-		let totalCollected = await Ticket.aggregate([
+		totalSold = await Ticket.countDocuments();
+		totalCollected = await Ticket.aggregate([
 			{
 				$group: {
 					_id: '',
@@ -38,21 +40,18 @@ exports.getLogs = async (req, res) => {
 		return;
 	} else if (type === 'volunteer') {
 		let volunteer_id = req.user.userId;
-		let logList = [];
-		let totalSold = 0;
-		let totalCollected = 0;
 		let volunteer = await Volunteer.findById(volunteer_id).select('events');
 		if (volunteer) {
 			let events = volunteer.events;
 			if (events.length > 0) {
-				logList = await Ticket.find({ event: { $in: events } })
+				logList = await Ticket.find({ 'event': { $in: events } })
 					.select('volunteer_id paid event')
 					.limit(perPage)
-					.skip(perPage * page)
+					.skip(perPage * (page-1))
 					.sort({ 'date': -1 })
 					.populate('volunteer_id')
 					.populate('event')
-					.exec()
+				console.log(logList);
 				logList = logList.map(log => {
 					return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name }
 				});
@@ -76,10 +75,10 @@ exports.getLogs = async (req, res) => {
 					}
 				]);
 				totalCollected = totalCollected[0].paid;
-				res.json({ logList, totalSold, totalCollected });
+				res.json({ success: true, logList, totalSold, totalCollected });
 				return;
 			} else {
-				res.json({ success: true, logList });
+				res.json({ success: true, logList, totalSold, totalCollected });
 				return;
 			}
 		} else {
