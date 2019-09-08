@@ -24,6 +24,7 @@ exports.issue = async (req, res) => {
         let newTicket = new Ticket({
             user_id: usr._id,
             url: cuid.slug(),
+            secretString: cuid.slug(),
             event: event_id,
             volunteer_id: req.user.userId,
             price: price,
@@ -89,7 +90,7 @@ exports.invalidate = async (req, res) => {
     res.json({ success: false, error: 'tickedId not passed' });
 }
 
-exports.getDetails = async (req, res) => {
+exports.getDetailsFromTicketUrl = async (req, res) => {
     let ticketUrl = req.body.ticketUrl;
     if (ticketUrl) {
         try {
@@ -110,6 +111,8 @@ exports.getDetails = async (req, res) => {
                 balance: ticket.balance,
                 participantNo: ticket.participantNo,
                 valid: ticket.valid,
+                secretString: ticket.secretString,
+                dateIssued: ticket.date
             }
             res.json({ success: true, userType, eventDetails, ticketDetails });
             return;

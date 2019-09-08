@@ -11,6 +11,11 @@ const ticketSchema = new mongoose.Schema({
 		required: true,
 		unique: true
 	},
+	secretString:{
+		type: String,
+		required: true,
+		unique: true
+	},
 	valid: {
 		type: Boolean,
 		default: true

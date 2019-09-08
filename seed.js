@@ -142,6 +142,7 @@ let ticketData = [
 	{
 		user_id: null,
 		url: 'abcd',
+		secretString: 'secret',
 		event: [],
 		volunteer_id: null,
 		price: 30,
@@ -151,6 +152,7 @@ let ticketData = [
 	{
 		user_id: null,
 		url: 'abcde',
+		secretString: 'secret2',
 		event: [],
 		volunteer_id: null,
 		price: 30,

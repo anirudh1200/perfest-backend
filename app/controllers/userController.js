@@ -11,7 +11,7 @@ exports.getLogs = async (req, res) => {
 	let totalCollected = 0;
 	if (type === 'admin') {
 		logList = await Ticket.find({})
-			.select('volunteer_id paid event')
+			.select('volunteer_id paid event date')
 			.limit(perPage)
 			.skip(perPage * page)
 			.sort({ 'date': -1 })
@@ -19,7 +19,7 @@ exports.getLogs = async (req, res) => {
 			.populate('event')
 			.exec()
 		logList = logList.map(log => {
-			return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name }
+			return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name, date: log.date }
 		});
 		totalSold = await Ticket.countDocuments();
 		totalCollected = await Ticket.aggregate([
@@ -45,15 +45,15 @@ exports.getLogs = async (req, res) => {
 			let events = volunteer.events;
 			if (events.length > 0) {
 				logList = await Ticket.find({ 'event': { $in: events } })
-					.select('volunteer_id paid event')
+					.select('volunteer_id paid event date')
 					.limit(perPage)
-					.skip(perPage * (page-1))
+					.skip(perPage * (page - 1))
 					.sort({ 'date': -1 })
 					.populate('volunteer_id')
 					.populate('event')
 				console.log(logList);
 				logList = logList.map(log => {
-					return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name }
+					return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name, date: log.date }
 				});
 				totalSold = await Ticket.countDocuments({ 'event': { $in: events } });
 				totalCollected = await Ticket.aggregate([
