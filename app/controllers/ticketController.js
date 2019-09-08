@@ -98,6 +98,7 @@ exports.getDetailsFromTicketUrl = async (req, res) => {
                 .populate('user_id')
                 .populate('event');
             let userType = ticket.user_id.type;
+            let userId = ticket.user_id;
             let { event } = ticket;
             let eventDetails = {
                 name: event.name,
@@ -114,7 +115,7 @@ exports.getDetailsFromTicketUrl = async (req, res) => {
                 secretString: ticket.secretString,
                 dateIssued: ticket.date
             }
-            res.json({ success: true, userType, eventDetails, ticketDetails });
+            res.json({ success: true, userType, eventDetails, ticketDetails, userId });
             return;
         } catch (err) {
             res.json({ success: false, error: err });

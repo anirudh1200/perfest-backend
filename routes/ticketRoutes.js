@@ -19,7 +19,7 @@ router.post('/invalidate', middleware.authAdminVol, ticket.invalidate);
 // @route		POST /ticket/getDetailsFromTicketUrl
 // @desc		get particular ticket detail
 // @params	ticketUrl
-// @return	success(true/false), error(if any), userType(bool), eventDetails, ticketDetails
+// @return	success(true/false), error(if any), userType(bool), eventDetails, ticketDetails, userId
 router.post('/getDetailsFromTicketUrl', ticket.getDetailsFromTicketUrl);
 
 //TODO event scan

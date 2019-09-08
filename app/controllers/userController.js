@@ -206,16 +206,31 @@ exports.deleteUser = (req, res) => {
 	return res.status(200);
 }
 
-exports.updateProfile = (req, res) => {
-	let userId = req.user._id;
+exports.updateProfile = async (req, res) => {
+	let userId = req.userId;
 	let UpdatedData = req.body.data;
 	try {
-		User.findByIdAndUpdate({ _id: userId }, UpdatedData);
+		await User.findByIdAndUpdate({ _id: userId }, UpdatedData);
 	}
 	catch (err) {
 		console.log(err);
-		res.json({ success: false, error: toString(err) });
+		res.json({ success: false, error: err });
 		return;
 	}
 	res.json({ success: true });
+}
+
+exports.getAnonymousUserDetails = async (req, res) => {
+	let userId = req.body.userId;
+	let user;
+	try {
+		user = await User.findById(userId);
+	}
+	catch (err) {
+		console.log(err);
+		res.json({ success: false, error: err });
+		return;
+	}
+	console.log(user);
+	res.json({ success: true, user });
 }

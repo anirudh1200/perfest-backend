@@ -48,7 +48,7 @@ router.post('/deleteUser', middleware.authVolunteer, userController.deleteUser);
 
 //@route		POST /user/updateProfile
 //@desc			update users profile
-//@params		token,changes in this format
+//@params		changes in this format
 //				data={
 //				 	name: ,
 //				 	password: ,
@@ -64,7 +64,33 @@ router.post('/deleteUser', middleware.authVolunteer, userController.deleteUser);
 //				 	type: ,
 //				 	csi_member: 
 //				 }
-router.post('/updateProfile', middleware.authUser, userController.updateProfile)
+router.post('/updateProfile', userController.updateProfile);
+
+// @route		POST /user/getUserDetails
+// @desc		get the userDetails
+// @params	userId
+/*
+	Sample
+{
+	"_id" : ObjectId("5d7544e82e2c6b3c22c90bae"),
+	"college" : {
+		"name" : null,
+		"department" : null,
+		"year" : null
+	},
+	"name" : null,
+	"password" : null,
+	"type" : false,
+	"csi_member" : false,
+	"tickets" : [
+		ObjectId("5d7544e82e2c6b3c22c90baf")
+	],
+	"contact" : {
+		"email" : "abc@abc.com"
+	}
+}
+*/
+router.post('/getAnonymousUserDetails', userController.getAnonymousUserDetails);
 
 
 
