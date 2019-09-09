@@ -1,6 +1,7 @@
 const User = require('../database/models/user'),
-    ticket = require('../database/models/ticket')
-sendgrid = require('@sendgrid/mail');
+    ticket = require('../database/models/ticket'),
+    jwt=require('jsonwebtoken'),
+    sendgrid = require('@sendgrid/mail');
 
 
 require('dotenv').config();
@@ -31,9 +32,52 @@ exports.eventConfirmation = async (user, Ticket) => {
     catch (err) {
         console.log(err);
         return false;
-    }
+    }   
     return true;
 }
+
+exports.resetPassword = async (user) => {
+    // let userEmail = "kolisomesh27@gmail.com";
+    let userEmail = user.contact.email;
+    let userName = user.name;
+    // let userName = "Somesh koli";
+    let jwt_token = await jwt.sign(
+        {
+            emailId :userEmail,
+            name: userName
+        },
+        "resetpasswordpassword",
+        {
+            expiresIn: "30m",
+        }
+    );
+
+    let generated_link = process.env.HOST + "/c/" + jwt_token;
+    var data = {
+        from: 'Perfest CC <services@perfest.co>',
+        to: userEmail,
+        subject: 'Reset your perfest account credentials.',
+        text: "Dear " + userName + ",\n Use this email to reset your password.The link will be active for 30 mintue from the issue time.\n"
+            + generated_link
+    }
+    //MAILING VIA MAILGUN
+    // await mail.messages().send(data, (error, body) => {
+    //     console.log(error, body)
+    // })
+    //MAILING VIA SENDGR
+    try {
+        await sendgrid.send(data);
+    }
+    catch (err) {
+        console.log(err);
+        return false;
+    }
+
+    return true;
+}
+
+
+
 
 //mail function
 const sendEmail = (data) => {

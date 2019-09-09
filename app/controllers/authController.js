@@ -1,9 +1,11 @@
+
 // To make controller
 const User = require('../database/models/user');
 const Volunteer = require('../database/models/volunteer');
 const Admin = require('../database/models/admin');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const mail = require('./mailController')
 const saltRounds = 12;
 
 const sendToken = (res, user, type) => {
@@ -151,4 +153,37 @@ exports.createUser = async (req, res) => {
         return;
     }
     res.json({ success: true });
+}
+
+exports.sendResetLink = async (req, res) => {
+    let email = req.body.email;
+    await User.findOne({ 'contact.email': email })
+        .then((user) => {
+            if(user!=null){
+                if (mail.resetPassword(user)) {
+                    return res.status(200).json({ success: true, message: "mail was sent successfully" })
+                }
+                else {
+                    return res.status(500).json({ success: false, error: "email not sent" })
+                }
+            }
+            else{
+                return res.status(500).json({ error: "user not found" });
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({success:false,error:"DB error"})
+        })
+
+}
+
+exports.resetPassword = async (req, res) => {
+    let email = req.body.email;
+    let user = User.findOneAndUpdate({ 'contact.email': email }, { password: req.body.password })
+        .catch((err) => {
+            console.log(err);
+            return res.status(500).json({ error: "user not found" });
+        })
+    return res.status(200).json({ message: "Password was reset" });
 }

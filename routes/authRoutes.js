@@ -25,4 +25,19 @@ router.post("/signup", auth.signup);
 // @retrun	status
 router.post("/createanonymous", auth.createUser);
 
+
+//@route 		POST /auth/resetPassword
+//@desc			reset user password
+//@params 		email_id,password
+//@return 		success status
+router.post("/resetPassword",auth.resetPassword);
+
+//@route 		POST /auth/sendResetMail
+//@desc			reset user password
+//@params 		email_id
+//@return 		success status
+router.post("/sendResetMail",auth.sendResetLink);
+
+
+
 module.exports = router;
