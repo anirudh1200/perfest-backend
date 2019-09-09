@@ -28,7 +28,7 @@ exports.getEvent = async (req, res) => {
 	let eventId = req.params.id;
 	let event = null;
 	try {
-		event = await Events.find({ _id: eventId });
+		event = await Events.findOne({ _id: eventId });
 	} catch (err) {
 		res.json({ success: false, event, error: toString(err) });
 	}
