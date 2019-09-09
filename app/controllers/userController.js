@@ -208,7 +208,7 @@ exports.upgradeAnonymousToUser = async (req, res) => {
 		res.json({ success: false, token, error: err });
 		return;
 	}
-	let token = jwt.sign({
+	token = jwt.sign({
 		type: 'user',
 		userId: userId,
 	}, "secret", {
