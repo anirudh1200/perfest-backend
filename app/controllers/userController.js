@@ -1,6 +1,7 @@
 const Ticket = require('../database/models/ticket');
 const Volunteer = require('../database/models/volunteer');
 const User = require('../database/models/user');
+const jwt = require('jsonwebtoken');
 
 exports.getLogs = async (req, res) => {
 	let perPage = 25;
@@ -195,18 +196,58 @@ exports.deleteUser = (req, res) => {
 	return res.status(200);
 }
 
-exports.updateProfile = async (req, res) => {
+exports.upgradeAnonymousToUser = async (req, res) => {
 	let userId = req.body.userId;
 	let UpdatedData = req.body.data;
+	let token;
 	try {
 		await User.findByIdAndUpdate({ _id: userId }, UpdatedData);
 	}
 	catch (err) {
 		console.log(err);
+		res.json({ success: false, token, error: err });
+		return;
+	}
+	let token = jwt.sign({
+		type: 'user',
+		userId: userId,
+	}, "secret", {
+			expiresIn: "1d",
+		});
+	res.json({ success: true, token });
+}
+
+exports.updateUserProfile = async (req, res) => {
+	let userId = req.user._id;
+	let error = '';
+	try {
+		if (req.body.name) {
+			await User.findByIdAndUpdate({ _id: userId }, { $set: { name: req.body.name } });
+		} else if (req.body.password) {
+			await User.findByIdAndUpdate({ _id: userId }, { $set: { password: req.body.password } });
+		} else if (req.body.contact.email) {
+			await User.findByIdAndUpdate({ _id: userId }, { $set: { 'contact.email': req.body.contact.email } });
+		} else if (req.body.contact.phone) {
+			await User.findByIdAndUpdate({ _id: userId }, { $set: { 'contact.phone': req.body.contact.phone } });
+		} else if (req.body.college.name) {
+			await User.findByIdAndUpdate({ _id: userId }, { $set: { 'college.name': req.body.college.name } });
+		} else if (req.body.college.department) {
+			await User.findByIdAndUpdate({ _id: userId }, { $set: { 'college.department': req.body.college.department } });
+		} else if (req.body.college.year) {
+			await User.findByIdAndUpdate({ _id: userId }, { $set: { name: req.body.name } });
+		} else {
+			error = 'no field specified';
+		}
+	} catch (err) {
 		res.json({ success: false, error: err });
 		return;
 	}
-	res.json({ success: true });
+	if (error) {
+		res.json({ success: false, error });
+		return;
+	} else {
+		res.json({ success: true });
+	}
 }
 
 exports.getAnonymousUserDetails = async (req, res) => {

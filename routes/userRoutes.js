@@ -46,8 +46,8 @@ router.post('/getTicketById', middleware.authUser, userController.getTicketById)
 // @return 		update status either 200 or 422
 router.post('/deleteUser', middleware.authVolunteer, userController.deleteUser);
 
-//@route		POST /user/updateProfile
-//@desc			update users profile
+//@route		POST /user/upgradeAnonymousToUser
+//@desc			update users profile from anonyous to user
 //@params		changes in this format
 //				data={
 //				 	name: ,
@@ -64,7 +64,14 @@ router.post('/deleteUser', middleware.authVolunteer, userController.deleteUser);
 //				 	type: ,
 //				 	csi_member: 
 //				 }
-router.post('/updateProfile', userController.updateProfile);
+// @return	token
+router.post('/upgradeAnonymousToUser', userController.upgradeAnonymousToUser);
+
+// @route		POST /user/updateUserProfile
+// @desc		changes specified field in user profile
+// @params	token, any filed present in user schema
+// @params	success, error(if any)
+router.post('/updateUserProfile', middleware.authUser, userController.updateUserProfile);
 
 // @route		POST /user/getUserDetails
 // @desc		get the userDetails
