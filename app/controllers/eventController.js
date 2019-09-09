@@ -5,7 +5,7 @@ exports.getAllEvents = async (req, res) => {
 	try {
 		eventList = await Events.find();
 	} catch (err) {
-		res.json({ success: false, eventList, error: toString(err) });
+		res.json({ success: false, eventList, error: err });
 		return;
 	}
 	res.json({ success: true, eventList });
@@ -18,19 +18,19 @@ exports.getAllEventsForDropdown = async (req, res) => {
 			.find()
 			.select('name cost_1 cost_2 cost_4')
 	} catch (err) {
-		res.json({ success: false, eventList, error: toString(err) });
+		res.json({ success: false, eventList, error: err });
 		return;
 	}
 	res.json({ success: true, eventList });
 }
 
 exports.getEvent = async (req, res) => {
-	let eventId = req.params.id;
+	let name = req.params.name;
 	let event = null;
 	try {
-		event = await Events.findOne({ _id: eventId });
+		event = await Events.findOne({ name });
 	} catch (err) {
-		res.json({ success: false, event, error: toString(err) });
+		res.json({ success: false, event, error: err });
 	}
 	res.json({ success: true, event });
 }
@@ -41,7 +41,7 @@ exports.addEvent = async (req, res) => {
 	try {
 		await newEvent.save();
 	} catch (err) {
-		res.json({ success: false, error: toString(err) });
+		res.json({ success: false, error: err });
 		return;
 	}
 	res.json({ success: true });
@@ -53,7 +53,7 @@ exports.deleteEvent = async (req, res) => {
 		try {
 			await Events.findByIdAndDelete({ _id: eventId });
 		} catch (err) {
-			res.json({ success: false, error: toString(err) });
+			res.json({ success: false, error: err });
 			return;
 		}
 		res.json({ success: true });
@@ -68,7 +68,7 @@ exports.editEvent = async (req, res) => {
 		try {
 			await Events.findByIdAndUpdate({ _id: event._id }, event);
 		} catch (err) {
-			res.json({ success: false, error: toString(err) });
+			res.json({ success: false, error: err });
 		}
 		res.json({ success: true });
 	} else {

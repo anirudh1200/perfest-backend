@@ -14,10 +14,10 @@ router.get('/list', eventController.getAllEvents);
 // @return	eventList(_is, name, cost)
 router.get('/dropdownList', eventController.getAllEventsForDropdown);
 
-// @route		GET /event/:id
+// @route		GET /event/:name
 // @desc		will get a particular event
 // @return	event(the event info)
-router.get('/:id', eventController.getEvent);
+router.get('/:name', eventController.getEvent);
 
 // @route		POST /event/post
 // desc			add an event
