@@ -196,7 +196,7 @@ exports.deleteUser = (req, res) => {
 }
 
 exports.updateProfile = async (req, res) => {
-	let userId = req.userId;
+	let userId = req.body.userId;
 	let UpdatedData = req.body.data;
 	try {
 		await User.findByIdAndUpdate({ _id: userId }, UpdatedData);
