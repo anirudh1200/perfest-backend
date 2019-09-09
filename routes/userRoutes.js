@@ -100,5 +100,13 @@ router.post('/updateUserProfile', middleware.authUser, userController.updateUser
 router.post('/getAnonymousUserDetails', userController.getAnonymousUserDetails);
 
 
+// @route		POST /user/getCollege
+// @desc		will get list of colleges present in databse
+// @params		
+// @return		array of college names
+// @permission	user/
+router.post('/getCollege',/* middleware.authUser,*/ userController.getCollege);
+
+
 
 module.exports = router;

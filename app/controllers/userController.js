@@ -264,3 +264,13 @@ exports.getAnonymousUserDetails = async (req, res) => {
 	console.log(user);
 	res.json({ success: true, user });
 }
+
+exports.getCollege = async (req, res) => {
+	let college = null
+	college = await User.find({}).distinct('college.name')
+		.catch((err) => {
+			console.log(err);
+			return res.status(500).json({ success: false })
+		})
+	return res.status(200).json({college,success:true});
+}
