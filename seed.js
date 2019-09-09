@@ -78,7 +78,8 @@ let userData = [
 		name: 'user1',
 		password: 'pass',
 		contact: {
-			email: 'user1@abc.com'
+			email: 'user1@abc.com',
+			phone: '12121212'
 		},
 		college: {
 			name: 'college4',
@@ -92,7 +93,8 @@ let userData = [
 		name: 'user2',
 		password: 'pass',
 		contact: {
-			phone: '9865xxxxxx'
+			phone: '9865xxxxxx',
+			email:'use222@a.c'
 		},
 		college: {
 			name: 'college4',
@@ -106,7 +108,8 @@ let userData = [
 		name: 'user3',
 		password: 'pass',
 		contact: {
-			email: 'user3@abc.com'
+			email: 'user3@abc.com',
+			phone: 99999999
 		},
 		college: {
 			name: 'college4',

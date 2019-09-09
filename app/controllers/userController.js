@@ -120,9 +120,7 @@ exports.getList = async (req, res) => {
 }
 
 exports.updateUser = async (req, res) => {
-	let role = req.user.type;
-	let user = new User();
-	User.findOne({ _id: req.user._id })
+	User.findOne({ 'contact.email': req.body.email })
 		.then((user) => {
 			let data = user.toJSON()
 			delete data._id
@@ -130,38 +128,23 @@ exports.updateUser = async (req, res) => {
 			delete data.csi_member
 			delete data.tickets
 			delete data._v
-			if (!data.contact.phone) {
-				res.json({ success: false, error: 'no phone number' });
-				return;
-			} else if (!data.contact.email) {
-				res.json({ success: false, error: 'no email' });
-				return;
-			}
 			let newVolunteer = new Volunteer(data);
-			try {
-				newVolunteer.save()
-					.then(a => {
-						User.findOneAndDelete({ _id: req.user._id })
-							.then(a => {
-								res.json({ success: true });
-								return;
-							})
-							.catch(err => {
-								res.json({ success: false, error: toString(err) });
-								return;
-							});
-					})
-					.catch(err => {
-						res.json({ success: false, error: toString(err) });
-						return;
-					});
-			}
-			catch (err) {
-				err => {
+			newVolunteer.save()
+				.then(() => {
+					User.findOneAndDelete({ 'contact.email': req.body.email })
+						.then(() => {
+							res.json({ success: true });
+							return;
+						})
+						.catch(err => {
+							res.json({ success: false, error: toString(err) });
+							return;
+						});
+				})
+				.catch(err => {
 					res.json({ success: false, error: toString(err) });
 					return;
-				}
-			}
+				});
 		})
 		.catch(err => {
 			res.json({ success: false, error: toString(err) });
