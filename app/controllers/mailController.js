@@ -1,6 +1,6 @@
 const User = require('../database/models/user'),
     ticket = require('../database/models/ticket'),
-    jwt=require('jsonwebtoken'),
+    jwt = require('jsonwebtoken'),
     sendgrid = require('@sendgrid/mail');
 
 
@@ -32,7 +32,7 @@ exports.eventConfirmation = async (user, Ticket) => {
     catch (err) {
         console.log(err);
         return false;
-    }   
+    }
     return true;
 }
 
@@ -41,18 +41,8 @@ exports.resetPassword = async (user) => {
     let userEmail = user.contact.email;
     let userName = user.name;
     // let userName = "Somesh koli";
-    let jwt_token = await jwt.sign(
-        {
-            emailId :userEmail,
-            name: userName
-        },
-        "resetpasswordpassword",
-        {
-            expiresIn: "30m",
-        }
-    );
-
-    let generated_link = process.env.HOST + "/c/" + jwt_token;
+    let genString = Math.random().toString(36).substring(3);
+    let generated_link = process.env.HOST + "/c/" + genString;
     var data = {
         from: 'Perfest CC <services@perfest.co>',
         to: userEmail,
@@ -60,6 +50,9 @@ exports.resetPassword = async (user) => {
         text: "Dear " + userName + ",\n Use this email to reset your password.The link will be active for 30 mintue from the issue time.\n"
             + generated_link
     }
+    //udpdate reset url  into database
+    await User.findByIdAndUpdate(user._id, { url: genString }, (err) => { console.log });
+
     //MAILING VIA MAILGUN
     // await mail.messages().send(data, (error, body) => {
     //     console.log(error, body)
@@ -76,10 +69,3 @@ exports.resetPassword = async (user) => {
     return true;
 }
 
-
-
-
-//mail function
-const sendEmail = (data) => {
-
-}

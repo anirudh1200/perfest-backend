@@ -160,6 +160,7 @@ exports.sendResetLink = async (req, res) => {
     await User.findOne({ 'contact.email': email })
         .then((user) => {
             if(user!=null){
+                console.log(user);
                 if (mail.resetPassword(user)) {
                     return res.status(200).json({ success: true, message: "mail was sent successfully" })
                 }
@@ -179,8 +180,12 @@ exports.sendResetLink = async (req, res) => {
 }
 
 exports.resetPassword = async (req, res) => {
-    let email = req.body.email;
-    let user = User.findOneAndUpdate({ 'contact.email': email }, { password: req.body.password })
+    let user = User.findOneAndUpdate({ 'url': req.body.userStr }, { password: req.body.password })
+        .then((user)=>{
+            if(user==null){
+                return res.json({success:false, error:"user not found"})
+            }
+        })
         .catch((err) => {
             console.log(err);
             return res.status(500).json({ error: "user not found" });
