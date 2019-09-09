@@ -98,20 +98,26 @@ exports.getList = async (req, res) => {
 		try {
 			list = await User.find()
 				// add/remove fileds from select as per necessity
-				.select('name contact college')
+				.select('name contact')
 		} catch (err) {
-			res.json({ success: false, list, error: toString(err) })
+			res.json({ success: false, list, error: err })
 		}
+		list = list.map(user => {
+			return { _id: user._id, name: user.name, email: contact.email }
+		});
 		res.json({ success: true, list });
 		return;
 	} else if (type === 'volunteer') {
 		try {
 			list = await Volunteer.find()
 				// add/remove fileds from select as per necessity
-				.select('name contact college')
+				.select('name contact')
 		} catch (err) {
-			res.json({ success: false, list, error: toString(err) });
+			res.json({ success: false, list, error: err });
 		}
+		list = list.map(vol => {
+			return { _id: vol._id, name: vol.name, email: vol.email }
+		});
 		res.json({ success: true, list });
 		return;
 	} else {
