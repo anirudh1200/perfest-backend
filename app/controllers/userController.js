@@ -149,17 +149,17 @@ exports.getAllTickets = async (req, res) => {
 	let userUrl = "";
 	try {
 		ticketList = await Ticket.find({ user_id: userId })
-			.select('valid event')
+			.select('valid event url')
 			.populate('event')
-		userUrl = await User.findOne({ _id: userId })
-			.select('url')
+		// userUrl = await User.findOne({ _id: userId })
+		// 	.select('url')
 	} catch (err) {
 		console.log(err);
 		res.json({ success: false, ticketList, error: toString(err) });
 		return;
 	}
-	console.log(ticketList);
-	res.json({ success: true, ticketList ,userUrl});
+	// console.log(ticketList);
+	res.json({ success: true, ticketList });
 }
 
 exports.getTicketById = async (req, res) => {
