@@ -23,4 +23,10 @@ router.post('/unassignEvent', middleware.authAdmin, volunteerController.unassign
 // @return 		update status either 200 or 422
 router.post('/deleteVolunteer', middleware.authAdmin, volunteerController.deleteVolunteer);
 
+// @route		POST /volunteer/getDetails
+// @desc		admin/volunteer will be able to get his details
+// @params	volunteerId
+// @return	all fields in volunteer schema
+router.post('/getDetails', middleware.authAdminVol, volunteerController.getDetails);
+
 module.exports = router;

@@ -64,3 +64,15 @@ exports.deleteVolunteer = (req, res) => {
 		.catch(console.log)
 	return res.status(200);
 }
+
+exports.getDetails = async (req, res) => {
+	let volunteerId = req.body.volunteerId;
+	let volunteer = '';
+	try {
+		volunteer = await Volunteer.findById(volunteerId);
+		res.json({ success: true, volunteer });
+	} catch (err) {
+		console.log(err);
+		res.json({ success: false, volunteer, error: err });
+	}
+}
