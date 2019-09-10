@@ -146,16 +146,20 @@ exports.updateUser = async (req, res) => {
 exports.getAllTickets = async (req, res) => {
 	let userId = req.user.userId;
 	let ticketList = [];
+	let userUrl = "";
 	try {
 		ticketList = await Ticket.find({ user_id: userId })
 			.select('valid event')
 			.populate('event')
+		userUrl = await User.findOne({ _id: userId })
+			.select('url')
 	} catch (err) {
 		console.log(err);
 		res.json({ success: false, ticketList, error: toString(err) });
 		return;
 	}
-	res.json({ success: true, ticketList });
+	console.log(ticketList);
+	res.json({ success: true, ticketList ,userUrl});
 }
 
 exports.getTicketById = async (req, res) => {
