@@ -43,6 +43,7 @@ exports.login = async (req, res) => {
     let error = false;
     let user = await User.findOne({ 'contact.email': req.body.email })
         .catch(err => {
+            console.log(err);
             res.json({ success: false, token, error: err });
             error = true;
         });
@@ -51,6 +52,7 @@ exports.login = async (req, res) => {
     }
     user = await Volunteer.findOne({ 'contact.email': req.body.email })
         .catch(err => {
+            console.log(err);
             res.json({ success: false, token, error: err });
             error = true;
         });
@@ -59,6 +61,7 @@ exports.login = async (req, res) => {
     }
     user = await Admin.findOne({ 'contact.email': req.body.email })
         .catch(err => {
+            console.log(err);
             res.json({ success: false, token, error: err });
             error = true;
         });
@@ -89,6 +92,7 @@ exports.signup = async (req, res, next) => {
         try {
             await newUser.save();
         } catch (err) {
+            console.log(err);
             res.json({ success: false, error: err });
             return;
         }
@@ -149,6 +153,7 @@ exports.createUser = async (req, res) => {
     try {
         await newUser.save();
     } catch (err) {
+        console.log(err);
         res.json({ success: false, error: err });
         return;
     }

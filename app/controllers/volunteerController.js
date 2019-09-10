@@ -8,19 +8,22 @@ exports.assignEvent = async (req, res) => {
 		await Events.findByIdAndUpdate(
 			eventId,
 			{ $push: { volunteers: volunteerId } }
-		).then(async user => {
+		).then(async () => {
 			await Volunteer.findByIdAndUpdate(
 				volunteerId,
 				{ $push: { events: eventId } }
-			).then(async volunteer => {
+			).then(async () => {
 				res.json({ success: true });
 			}, err => {
+				console.log(err);
 				res.json({ success: false, error: err });
 			});
 		}, err => {
+			console.log(err);
 			res.json({ success: false, error: err });
 		});
 	} else {
+		console.log(err);
 		res.json({ success: false, error: 'insufficient data' })
 	}
 }
@@ -41,12 +44,15 @@ exports.unassignEvent = async (req, res) => {
 				console.log(volunteer);
 				res.json({ success: true });
 			}, err => {
+				console.log(err);
 				res.json({ success: false, error: err });
 			});
 		}, err => {
+			console.log(err);
 			res.json({ success: false, error: err });
 		});
 	} else {
+		console.log(err);
 		res.json({ success: false, error: 'insufficient data' })
 	}
 }

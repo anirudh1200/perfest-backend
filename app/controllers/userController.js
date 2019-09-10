@@ -41,41 +41,18 @@ exports.getLogs = async (req, res) => {
 		return;
 	} else if (type === 'volunteer') {
 		let volunteer_id = req.user.userId;
-		let volunteer = await Volunteer.findById(volunteer_id).select('events');
+		let volunteer = await Volunteer.findById(volunteer_id).select('sold');
 		if (volunteer) {
-			let events = volunteer.events;
-			if (events.length > 0) {
-				logList = await Ticket.find({ 'event': { $in: events } })
-					.select('volunteer_id paid event date')
-					.limit(perPage)
-					.skip(perPage * (page - 1))
-					.sort({ 'date': -1 })
-					.populate('volunteer_id')
+			let ticketsSold = volunteer.sold.ticket;
+			if (ticketsSold.length > 0) {
+				logList = await Ticket.find({ '_id': { $in: ticketsSold } })
+					.select('date event')
 					.populate('event')
-				console.log(logList);
 				logList = logList.map(log => {
-					return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name, date: log.date }
+					return { vname: 'You', ename: log.event.name, date: log.date }
 				});
-				totalSold = await Ticket.countDocuments({ 'event': { $in: events } });
-				totalCollected = await Ticket.aggregate([
-					{
-						$match: {
-							'event': { $in: events }
-						}
-					},
-					{
-						$group: {
-							_id: '',
-							paid: { $sum: '$paid' }
-						}
-					}, {
-						$project: {
-							_id: 0,
-							paid: '$paid'
-						}
-					}
-				]);
-				totalCollected = totalCollected[0].paid;
+				totalSold = ticketsSold.length;
+				totalCollected = volunteer.sold.amountCollected;
 				res.json({ success: true, logList, totalSold, totalCollected });
 				return;
 			} else {
@@ -101,7 +78,9 @@ exports.getList = async (req, res) => {
 				// add/remove fileds from select as per necessity
 				.select('name contact')
 		} catch (err) {
-			res.json({ success: false, list, error: err })
+			console.log(err);
+			res.json({ success: false, list, error: err });
+			return;
 		}
 		list = list.map(user => {
 			return { _id: user._id, name: user.name, email: contact.email }
@@ -114,7 +93,9 @@ exports.getList = async (req, res) => {
 				// add/remove fileds from select as per necessity
 				.select('name contact')
 		} catch (err) {
+			console.log(err);
 			res.json({ success: false, list, error: err });
+			return;
 		}
 		list = list.map(vol => {
 			return { _id: vol._id, name: vol.name, email: vol.email }
@@ -144,16 +125,19 @@ exports.updateUser = async (req, res) => {
 							return;
 						})
 						.catch(err => {
+							console.log(err);
 							res.json({ success: false, error: toString(err) });
 							return;
 						});
 				})
 				.catch(err => {
+					console.log(err);
 					res.json({ success: false, error: toString(err) });
 					return;
 				});
 		})
 		.catch(err => {
+			console.log(err);
 			res.json({ success: false, error: toString(err) });
 			return;
 		});
@@ -167,10 +151,10 @@ exports.getAllTickets = async (req, res) => {
 			.select('valid event')
 			.populate('event')
 	} catch (err) {
+		console.log(err);
 		res.json({ success: false, ticketList, error: toString(err) });
 		return;
 	}
-	console.log(ticketList);
 	res.json({ success: true, ticketList });
 }
 
@@ -191,8 +175,8 @@ exports.getTicketById = async (req, res) => {
 
 exports.deleteUser = (req, res) => {
 	User.findOneAndDelete({ _id: req.user._id })
-		.then(console.log())
-		.catch(console.log())
+		.then(console.log)
+		.catch(console.log)
 	return res.status(200);
 }
 
@@ -212,8 +196,8 @@ exports.upgradeAnonymousToUser = async (req, res) => {
 		type: 'user',
 		userId: userId,
 	}, "secret", {
-			expiresIn: "1d",
-		});
+		expiresIn: "1d",
+	});
 	res.json({ success: true, token });
 }
 
@@ -239,10 +223,12 @@ exports.updateUserProfile = async (req, res) => {
 			error = 'no field specified';
 		}
 	} catch (err) {
+		console.log(err);
 		res.json({ success: false, error: err });
 		return;
 	}
 	if (error) {
+		console.log(err);
 		res.json({ success: false, error });
 		return;
 	} else {
@@ -261,16 +247,17 @@ exports.getAnonymousUserDetails = async (req, res) => {
 		res.json({ success: false, error: err });
 		return;
 	}
-	console.log(user);
 	res.json({ success: true, user });
 }
 
 exports.getCollege = async (req, res) => {
 	let college = null
 	college = await User.find({}).distinct('college.name')
-		.catch((err) => {
-			console.log(err);
-			return res.status(500).json({ success: false })
+		.then(college => {
+			res.status(200).json({ college, success: true });
 		})
-	return res.status(200).json({college,success:true});
+		.catch(err => {
+			console.log(err);
+			res.status(500).json({ success: false })
+		});
 }

@@ -1,6 +1,7 @@
 const cuid = require("cuid");
 const Ticket = require("../database/models/ticket");
 const User = require("../database/models/user");
+const Volunteer = require("../database/models/volunteer");
 const mail = require('../controllers/mailController')
 
 exports.issue = async (req, res) => {
@@ -47,15 +48,29 @@ exports.issue = async (req, res) => {
                     $push: { tickets: ticket._id }
                 }
             )
-            let result;
-            try {
-                result = await mail.eventConfirmation(usr, ticket);
-                if (!result) {
-                    res.json({ success: result, error: 'mail issue' });
-                    return;
-                }
-                res.json({ success: result });
+        } catch (err) {
+            console.log(err);
+            res.json({ success: false, error: err });
+            return;
+        }
+        try {
+            let result = await mail.eventConfirmation(usr, ticket);
+            if (!result) {
+                res.json({ success: result, error: 'mail issue' });
                 return;
+            }
+        } catch (err) {
+            console.log(err);
+            res.json({ success: false, error: err });
+            return;
+        }
+        try {
+            volunteer = await Volunteer.findById(req.user.userId);
+            volunteer.sold.ticket.push(ticket._id);
+            volunteer.sold.amountCollected = volunteer.sold.amountCollected + price;
+            try {
+                await volunteer.save();
+                res.json({ success: true });
             } catch (err) {
                 console.log(err);
                 res.json({ success: false, error: err });
@@ -81,6 +96,7 @@ exports.invalidate = async (req, res) => {
                 { $set: { valid: false } }
             )
         } catch (err) {
+            console.log(err);
             res.json({ success: false, error: err });
             return;
         }
@@ -118,6 +134,7 @@ exports.getDetailsFromTicketUrl = async (req, res) => {
             res.json({ success: true, userType, eventDetails, ticketDetails, userId });
             return;
         } catch (err) {
+            console.log(err);
             res.json({ success: false, error: err });
             return;
         }

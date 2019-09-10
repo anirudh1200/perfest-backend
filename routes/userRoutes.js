@@ -7,7 +7,7 @@ const middleware = require('../app/middleware/middleware');
 // @route		POST /user/logs
 // @desc		will get the latest entries from ticket database
 // @params	page(0,1,2,...)
-// @return	array of objects {ename, vname, price}, totalCollected(money), totalSold(tickets)
+// @return	array of objects {ename, vname, price, date}, totalCollected(money), totalSold(tickets)
 // @permission	admin/volunteer
 // TODO			think about making it realtime
 // TODO			figure out user role(admin/volunteer) based on JWT or post param ??
