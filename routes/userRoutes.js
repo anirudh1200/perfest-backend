@@ -29,14 +29,14 @@ router.post('/updateUser', middleware.authAdmin, userController.updateUser);
 
 // @route		POST /user/getAllTickets
 // @desc		will get all the tickets of user
-// @params	none
-// @return	array containing list of tickets
+// @params		user token
+// @return		array containing list of tickets
 router.post('/getAllTickets', middleware.authUser, userController.getAllTickets);
 
 // @route		POST /user/getTicket
 // @desc		will get one particular ticket
-// @params	ticketId
-// @return	ticket(containing ticket info)
+// @params		ticketId
+// @return		ticket(containing ticket info)
 router.post('/getTicketById', middleware.authUser, userController.getTicketById);
 
 // @route		POST /user/deleteUser
@@ -64,18 +64,18 @@ router.post('/deleteUser', middleware.authVolunteer, userController.deleteUser);
 //				 	type: ,
 //				 	csi_member: 
 //				 }
-// @return	token
+// @return		token
 router.post('/upgradeAnonymousToUser', userController.upgradeAnonymousToUser);
 
 // @route		POST /user/updateUserProfile
 // @desc		changes specified field in user profile
-// @params	token, any filed present in user schema
-// @params	success, error(if any)
+// @params		token, any filed present in user schema
+// @params		success, error(if any)
 router.post('/updateUserProfile', middleware.authUser, userController.updateUserProfile);
 
 // @route		POST /user/getUserDetails
 // @desc		get the userDetails
-// @params	userId
+// @params		userId
 /*
 	Sample
 {
@@ -103,9 +103,9 @@ router.post('/getAnonymousUserDetails', userController.getAnonymousUserDetails);
 // @route		POST /user/getCollege
 // @desc		will get list of colleges present in databse
 // @params		
-// @return		array of college names
-// @permission	user/
-router.post('/getCollege',/* middleware.authUser,*/ userController.getCollege);
+// @return		array of college names,success status
+// @permission	all
+router.post('/getCollege', userController.getCollege);
 
 
 

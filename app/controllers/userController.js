@@ -160,7 +160,7 @@ exports.updateUser = async (req, res) => {
 }
 
 exports.getAllTickets = async (req, res) => {
-	let userId = req.user._id;
+	let userId = req.user.userId;
 	let ticketList = [];
 	try {
 		ticketList = await Ticket.find({ user_id: userId })
