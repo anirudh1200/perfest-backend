@@ -46,10 +46,10 @@ exports.getLogs = async (req, res) => {
 			let ticketsSold = volunteer.sold.ticket;
 			if (ticketsSold.length > 0) {
 				logList = await Ticket.find({ '_id': { $in: ticketsSold } })
-					.select('date event')
+					.select('date event price')
 					.populate('event')
 				logList = logList.map(log => {
-					return { vname: 'You', ename: log.event.name, date: log.date }
+					return { vname: 'You', ename: log.event.name, date: log.date, price: log.price }
 				});
 				totalSold = ticketsSold.length;
 				totalCollected = volunteer.sold.amountCollected;

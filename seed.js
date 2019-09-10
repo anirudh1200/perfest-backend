@@ -179,7 +179,7 @@ let volunteerData = [
 		},
 		sold: {
 			ticket: [],
-			amountCollected: 50
+			amountCollected: 0
 		}
 	},
 	{
