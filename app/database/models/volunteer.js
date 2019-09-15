@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const volunteerSchema = new mongoose.Schema({
 	name: {
 		type: String,
-		required: true
+		// required: true
 	},
 	password: {
 		type: String,
@@ -17,8 +17,8 @@ const volunteerSchema = new mongoose.Schema({
 		},
 		phone: {
 			type: String,
-			unique: true,
-			required: true
+			// unique: true,
+			// required: true
 		},
 	},
 	college: {

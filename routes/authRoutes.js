@@ -23,7 +23,7 @@ router.post("/signup", auth.signup);
 // @desc		will create an user
 // @params	phone/email and password
 // @retrun	status
-router.post("/createanonymous", auth.createUser);
+router.post("/createUser", auth.createUser);
 
 
 //@route 		POST /auth/resetPassword

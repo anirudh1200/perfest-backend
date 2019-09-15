@@ -6,19 +6,18 @@ const jwt = require('jsonwebtoken');
 exports.getLogs = async (req, res) => {
 	let perPage = 25;
 	let type = req.user.type;
-	let page = req.body.page;
+	let page = req.body.page-1;
 	let logList = [];
 	let totalSold = 0;
 	let totalCollected = 0;
 	if (type === 'admin') {
 		logList = await Ticket.find({})
-			.select('volunteer_id paid event date')
-			.limit(perPage)
 			.skip(perPage * page)
+			.limit(perPage)
 			.sort({ 'date': -1 })
+			.select('volunteer_id paid event date')
 			.populate('volunteer_id')
 			.populate('event')
-			.exec()
 		logList = logList.map(log => {
 			return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name, date: log.date }
 		});
@@ -46,6 +45,9 @@ exports.getLogs = async (req, res) => {
 			let ticketsSold = volunteer.sold.ticket;
 			if (ticketsSold.length > 0) {
 				logList = await Ticket.find({ '_id': { $in: ticketsSold } })
+					.skip(perPage * page)
+					.limit(perPage)
+					.sort({ 'date': -1 })
 					.select('date event price')
 					.populate('event')
 				logList = logList.map(log => {

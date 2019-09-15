@@ -1,4 +1,3 @@
-
 // To make controller
 const User = require('../database/models/user');
 const Volunteer = require('../database/models/volunteer');
@@ -13,8 +12,8 @@ const sendToken = (res, user, type) => {
         type,
         userId: user._id,
     }, "secret", {
-            expiresIn: "1d",
-        });
+        expiresIn: "1d",
+    });
     res.json({ success: true, token: jwt_token });
 }
 
@@ -106,65 +105,73 @@ exports.createUser = async (req, res) => {
     let phone = req.body.phone;
     let email = req.body.email;
     let password = req.body.password;
-    // To be userd after hashing is enabled
-    // bcrypt.hash(password, saltRounds, async (err, hash) => {
-    //     if (!err) {
-    //         if (req.body.phone) {
-    //             data = {
-    //                 contact: {
-    //                     phone
-    //                 },
-    //                 password: hash
-    //             }
-    //         } else {
-    //             data = {
-    //                 contact: {
-    //                     email
-    //                 },
-    //                 password: hash
-    //             }
-    //         }
-    //         let newUser = new User(data);
-    //         try {
-    //             await newUser.save();
-    //         } catch (err) {
-    //             res.json({ success: false, error: err });
-    //             return;
-    //         }
-    //         res.json({ success: true });
-    //     }
-    // });
-    if (req.body.phone) {
-        data = {
-            contact: {
-                phone
-            },
-            password
+    let user = await User.findOne({ 'contact.email': email });
+    let volunteer = await Volunteer.findOne({ 'contact.email': email });
+    let admin = await Admin.findOne({ 'contact.email': email });
+    if (!(user || volunteer || admin)) {
+        // To be userd after hashing is enabled
+        // bcrypt.hash(password, saltRounds, async (err, hash) => {
+        //     if (!err) {
+        //         if (req.body.phone) {
+        //             data = {
+        //                 contact: {
+        //                     phone
+        //                 },
+        //                 password: hash
+        //             }
+        //         } else {
+        //             data = {
+        //                 contact: {
+        //                     email
+        //                 },
+        //                 password: hash
+        //             }
+        //         }
+        //         let newUser = new User(data);
+        //         try {
+        //             await newUser.save();
+        //         } catch (err) {
+        //             res.json({ success: false, error: err });
+        //             return;
+        //         }
+        //         res.json({ success: true });
+        //     }
+        // });
+        if (req.body.phone) {
+            data = {
+                contact: {
+                    phone
+                },
+                password
+            }
+        } else {
+            data = {
+                contact: {
+                    email
+                },
+                password
+            }
         }
-    } else {
-        data = {
-            contact: {
-                email
-            },
-            password
+        let newUser = new User(data);
+        try {
+            await newUser.save();
+        } catch (err) {
+            console.log(err);
+            res.json({ success: false, error: err });
+            return;
         }
-    }
-    let newUser = new User(data);
-    try {
-        await newUser.save();
-    } catch (err) {
-        console.log(err);
-        res.json({ success: false, error: err });
+        res.json({ success: true });
         return;
+    } else {
+        res.json({ success: false, error: 'email already taken' });
     }
-    res.json({ success: true });
 }
 
 exports.sendResetLink = async (req, res) => {
     let email = req.body.email;
     await User.findOne({ 'contact.email': email })
         .then((user) => {
-            if(user!=null){
+            if (user != null) {
                 console.log(user);
                 if (mail.resetPassword(user)) {
                     return res.status(200).json({ success: true, message: "mail was sent successfully" })
@@ -173,22 +180,22 @@ exports.sendResetLink = async (req, res) => {
                     return res.status(500).json({ success: false, error: "email not sent" })
                 }
             }
-            else{
+            else {
                 return res.status(500).json({ error: "user not found" });
             }
         })
         .catch((err) => {
             console.log(err);
-            return res.status(500).json({success:false,error:"DB error"})
+            return res.status(500).json({ success: false, error: "DB error" })
         })
 
 }
 
 exports.resetPassword = async (req, res) => {
     let user = User.findOneAndUpdate({ 'url': req.body.userStr }, { password: req.body.password })
-        .then((user)=>{
-            if(user==null){
-                return res.json({success:false, error:"user not found"})
+        .then((user) => {
+            if (user == null) {
+                return res.json({ success: false, error: "user not found" })
             }
         })
         .catch((err) => {

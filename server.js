@@ -4,7 +4,6 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     mongoose = require('mongoose'),
     logger = require('morgan'),
-    seedDb = require('./seed.js'),
     authRoutes = require('./routes/authRoutes'),
     userRoutes = require('./routes/userRoutes'),
     ticketRoutes = require('./routes/ticketRoutes'),
@@ -36,8 +35,6 @@ if (process.env.LOCALDEV === 'true') {
 mongoose.connect(mongo_uri, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
     .then(() => console.log("Database connected"))
     .catch(console.log);
-
-// seedDb();
 
 //=======================
 // ALLOW-CORS
