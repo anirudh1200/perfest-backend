@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 exports.getLogs = async (req, res) => {
 	let perPage = 25;
 	let type = req.user.type;
-	let page = req.body.page-1;
+	let page = req.body.page - 1;
 	let logList = [];
 	let totalSold = 0;
 	let totalCollected = 0;
@@ -18,26 +18,34 @@ exports.getLogs = async (req, res) => {
 			.select('volunteer_id paid event date')
 			.populate('volunteer_id')
 			.populate('event')
-		logList = logList.map(log => {
-			return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name, date: log.date }
-		});
-		totalSold = await Ticket.countDocuments();
-		totalCollected = await Ticket.aggregate([
-			{
-				$group: {
-					_id: '',
-					paid: { $sum: '$paid' }
+		try {
+			logList = logList.map(log => {
+				try {
+					return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name, date: log.date }
+				} catch (err) {
+					console.log(err);
 				}
-			}, {
-				$project: {
-					_id: 0,
-					paid: '$paid'
+			});
+			totalSold = await Ticket.countDocuments();
+			totalCollected = await Ticket.aggregate([
+				{
+					$group: {
+						_id: '',
+						paid: { $sum: '$paid' }
+					}
+				}, {
+					$project: {
+						_id: 0,
+						paid: '$paid'
+					}
 				}
-			}
-		]);
-		totalCollected = totalCollected[0].paid;
-		res.json({ success: true, logList, totalSold, totalCollected });
-		return;
+			]);
+			totalCollected = totalCollected[0].paid;
+			res.json({ success: true, logList, totalSold, totalCollected });
+			return;
+		} catch (err) {
+			res.json({ success: true, logList, totalSold, totalCollected });
+		}
 	} else if (type === 'volunteer') {
 		let volunteer_id = req.user.userId;
 		let volunteer = await Volunteer.findById(volunteer_id).select('sold');
