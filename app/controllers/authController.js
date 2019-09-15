@@ -20,19 +20,19 @@ const sendToken = (res, user, type) => {
 const checkUser = (req, res, user, token, type) => {
     if (user) {
         // To be userd after hashing is enabled
-        // bcrypt.compare(myPlaintextPassword, hash, function (err, res) {
-        //     if (res) {
-        //         sendToken(res, user, type);
-        //     } else {
-        //         res.status(401).json({ success: false, token, error: 'invalid credentials' });
-        //     }
-        //     return true;
-        // });
-        if (user.password === req.body.password) {
-            sendToken(res, user, type);
-        } else {
-            res.status(401).json({ success: false, token, error: 'invalid credentials' });
-        }
+        bcrypt.compare(req.body.password, user.password, function (err, success) {
+            if (success) {
+                sendToken(res, user, type);
+            } else {
+                res.status(401).json({ success: false, token, error: 'invalid credentials' });
+            }
+        });
+        // if (user.password === req.body.password) {
+        //     sendToken(res, user, type);
+        // } else {
+        //     res.status(401).json({ success: false, token, error: 'invalid credentials' });
+        // }
+        // return true;
         return true;
     }
 }
@@ -97,7 +97,6 @@ exports.signup = async (req, res, next) => {
         }
         res.json({ success: true });
     });
-
 }
 
 exports.createUser = async (req, res) => {
@@ -110,58 +109,58 @@ exports.createUser = async (req, res) => {
     let admin = await Admin.findOne({ 'contact.email': email });
     if (!(user || volunteer || admin)) {
         // To be userd after hashing is enabled
-        // bcrypt.hash(password, saltRounds, async (err, hash) => {
-        //     if (!err) {
-        //         if (req.body.phone) {
-        //             data = {
-        //                 contact: {
-        //                     phone
-        //                 },
-        //                 password: hash
-        //             }
-        //         } else {
-        //             data = {
-        //                 contact: {
-        //                     email
-        //                 },
-        //                 password: hash
-        //             }
+        bcrypt.hash(password, saltRounds, async (err, hash) => {
+            if (!err) {
+                if (req.body.phone) {
+                    data = {
+                        contact: {
+                            phone
+                        },
+                        password: hash
+                    }
+                } else {
+                    data = {
+                        contact: {
+                            email
+                        },
+                        password: hash
+                    }
+                }
+                let newUser = new User(data);
+                try {
+                    await newUser.save();
+                } catch (err) {
+                    res.json({ success: false, error: err });
+                    return;
+                }
+                res.json({ success: true });
+            }
+        });
+        //     if (req.body.phone) {
+        //         data = {
+        //             contact: {
+        //                 phone
+        //             },
+        //             password
         //         }
-        //         let newUser = new User(data);
-        //         try {
-        //             await newUser.save();
-        //         } catch (err) {
-        //             res.json({ success: false, error: err });
-        //             return;
+        //     } else {
+        //         data = {
+        //             contact: {
+        //                 email
+        //             },
+        //             password
         //         }
-        //         res.json({ success: true });
         //     }
-        // });
-        if (req.body.phone) {
-            data = {
-                contact: {
-                    phone
-                },
-                password
-            }
-        } else {
-            data = {
-                contact: {
-                    email
-                },
-                password
-            }
-        }
-        let newUser = new User(data);
-        try {
-            await newUser.save();
-        } catch (err) {
-            console.log(err);
-            res.json({ success: false, error: err });
-            return;
-        }
-        res.json({ success: true });
-        return;
+        //     let newUser = new User(data);
+        //     try {
+        //         await newUser.save();
+        //     } catch (err) {
+        //         console.log(err);
+        //         res.json({ success: false, error: err });
+        //         return;
+        //     }
+        //     res.json({ success: true });
+        //     return;
     } else {
         res.json({ success: false, error: 'email already taken' });
     }
@@ -192,15 +191,18 @@ exports.sendResetLink = async (req, res) => {
 }
 
 exports.resetPassword = async (req, res) => {
-    let user = User.findOneAndUpdate({ 'url': req.body.userStr }, { password: req.body.password })
-        .then((user) => {
-            if (user == null) {
-                return res.json({ success: false, error: "user not found" })
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            return res.status(500).json({ error: "user not found" });
-        })
-    return res.status(200).json({ message: "Password was reset" });
+    // To be userd after hashing is enabled
+    bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
+        let user = User.findOneAndUpdate({ 'url': req.body.userStr }, { password: hash })
+            .then((user) => {
+                if (user == null) {
+                    return res.json({ success: false, error: "user not found" })
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                return res.status(500).json({ error: "user not found" });
+            })
+        return res.status(200).json({ message: "Password was reset" });
+    });
 }

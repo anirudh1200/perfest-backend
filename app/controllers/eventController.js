@@ -1,4 +1,5 @@
 const Events = require('../database/models/events');
+const Ticket = require('../database/models/ticket');
 
 exports.getAllEvents = async (req, res) => {
 	let eventList = [];
@@ -74,5 +75,30 @@ exports.editEvent = async (req, res) => {
 	} else {
 		res.json({ success: false, error: 'no data passed' })
 		return;
+	}
+}
+
+exports.getAllEventSoldStats = async (req, res) => {
+	try {
+		let allEvents = await Events.find().select('name');
+		let returnData = []
+		for (let i = 0; i < allEvents.length; i++) {
+			let tickets = await Ticket.find({ event: allEvents[i]._id })
+				.select('paid');
+			let totalSold = tickets.length;
+			let totalCollected = 0;
+			tickets.map(ticket => {
+				totalCollected = totalCollected + ticket.paid
+			});
+			returnData.push({
+				totalSold,
+				totalCollected,
+				event: allEvents[i]
+			})
+		}
+		res.json({ success: true, stats: returnData });
+	} catch (err) {
+		console.log(err);
+		res.json({ success: false, stats: [], error: err })
 	}
 }

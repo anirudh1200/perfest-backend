@@ -37,4 +37,9 @@ router.post('/delete', middleware.authAdmin, eventController.deleteEvent);
 // @params	object event
 router.post('/update', eventController.deleteEvent);
 
+// @route		POST /event/getAllEventSoldStats
+// @desc		get no of tickets sold and collected info of all events
+// @return	array{event, sold, collected}
+router.post('/getAllEventSoldStats', /* middleware.authAdmin, */eventController.getAllEventSoldStats);
+
 module.exports = router;
