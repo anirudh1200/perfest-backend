@@ -27,7 +27,7 @@ const ticketSchema = new mongoose.Schema({
 	},
 	volunteer_id: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Volunteer',
+		ref: 'Admin',
 		required: true
 	},
 	price: {
