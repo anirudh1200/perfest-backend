@@ -27,7 +27,8 @@ const ticketSchema = new mongoose.Schema({
 	},
 	volunteer_id: {
 		type: mongoose.Schema.Types.ObjectId,
-		refPath: 'onModel',
+		// refPath: 'onModel',
+		ref : 'Admin',
 		required: true
 	},
 	price: {
@@ -49,11 +50,11 @@ const ticketSchema = new mongoose.Schema({
 		type: Date,
 		default: new Date()
 	},
-	onModel:{
-		type: String,
-		require : true,
-		enum : ['Admin','Volunteer']
-	}
+	// onModel:{
+	// 	type: String,
+	// 	require : true,
+	// 	enum : ['Admin','Volunteer']
+	// }
 });
 
 ticketSchema.pre('save', function(next) {
