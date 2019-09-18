@@ -12,8 +12,8 @@ exports.getLogs = async (req, res) => {
 	let totalCollected = 0;
 	if (type === 'admin') {
 		logList = await Ticket.find({})
-			.skip(perPage * page)
-			.limit(perPage)
+			// .skip(perPage * page)
+			// .limit(perPage)
 			.sort({ 'date': -1 })
 			.select('volunteer_id paid event date')
 			.populate('volunteer_id')
@@ -53,8 +53,8 @@ exports.getLogs = async (req, res) => {
 			let ticketsSold = volunteer.sold.ticket;
 			if (ticketsSold.length > 0) {
 				logList = await Ticket.find({ '_id': { $in: ticketsSold } })
-					.skip(perPage * page)
-					.limit(perPage)
+					// .skip(perPage * page)
+					// .limit(perPage)
 					.sort({ 'date': -1 })
 					.select('date event price')
 					.populate('event')
