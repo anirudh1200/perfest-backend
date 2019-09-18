@@ -30,7 +30,8 @@ exports.issue = async (req, res) => {
             volunteer_id: req.user.userId,
             price: price,
             paid: paid,
-            participantNo: participantNo
+            participantNo: participantNo,
+            date: new Date()
         });
         let ticket;
         try {
