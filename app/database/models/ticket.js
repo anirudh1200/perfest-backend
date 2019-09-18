@@ -27,11 +27,7 @@ const ticketSchema = new mongoose.Schema({
 	},
 	volunteer_id: {
 		type: mongoose.Schema.Types.ObjectId,
-<<<<<<< Updated upstream
-		ref: 'Admin',
-=======
 		refPath: 'onModel',
->>>>>>> Stashed changes
 		required: true
 	},
 	price: {
