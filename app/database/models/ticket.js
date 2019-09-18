@@ -27,7 +27,11 @@ const ticketSchema = new mongoose.Schema({
 	},
 	volunteer_id: {
 		type: mongoose.Schema.Types.ObjectId,
+<<<<<<< Updated upstream
 		ref: 'Admin',
+=======
+		refPath: 'onModel',
+>>>>>>> Stashed changes
 		required: true
 	},
 	price: {
@@ -49,6 +53,11 @@ const ticketSchema = new mongoose.Schema({
 		type: Date,
 		default: new Date()
 	},
+	onModel:{
+		type: String,
+		require : true,
+		enum : ['Admin','Volunteer']
+	}
 });
 
 ticketSchema.pre('save', function(next) {
