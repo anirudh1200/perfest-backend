@@ -7,4 +7,4 @@ jobs:
             - checkout
             - deploy:
                   name: Digital Ocean
-                  command: ssh -o "StrictHostKeyChecking no" perfest@167.71.234.128 "cd ~/perfest-backend; git pull; yarn install; forever stop server.js; forever start server.js"
+                  command: ssh -o "StrictHostKeyChecking no" perfest@167.71.234.128 "bash deploy-backend.sh"
