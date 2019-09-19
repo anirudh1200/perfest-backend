@@ -12,7 +12,7 @@ router.post("/issue", middleware.authAdminVol, ticket.issue);
 
 // @route		POST /ticket/invalidate
 // @desc		ticket will no longer be valid
-// @params	ticketId
+// @params	secretString
 // @return	success(true/false), error(if any)
 router.post('/invalidate', middleware.authAdminVol, ticket.invalidate);
 

@@ -27,6 +27,10 @@ const eventSchema = new mongoose.Schema({
 	venue: {
 		type: String,
 		required: true
+	},
+	duration: {
+		type: Number,
+		default: 1
 	}
 });
 

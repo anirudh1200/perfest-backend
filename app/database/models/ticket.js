@@ -16,9 +16,9 @@ const ticketSchema = new mongoose.Schema({
 		required: true,
 		unique: true
 	},
-	valid: {
-		type: Boolean,
-		default: true
+	validity: {
+		type: Number,
+		default: 1
 	},
 	event: {
 		type: mongoose.Schema.Types.ObjectId,

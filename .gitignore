@@ -6,3 +6,6 @@
 
 # npm lock files (use yarn by default)
 package-lock.json
+
+/getPass.js
+/changeTicketValidity.js

@@ -60,7 +60,7 @@ exports.getLogs = async (req, res) => {
 					.select('date event price')
 					.populate('event')
 				logList = logList.map(log => {
-					return { vname: 'You', ename: log.event.name, date: log.date, price: log.price }
+					return { vname: 'You', ename: log.event.name, date: log.date, price: log.price, uemail: log['user_id'].contact.email }
 				});
 				totalSold = ticketsSold.length;
 				totalCollected = volunteer.sold.amountCollected;
