@@ -114,24 +114,31 @@ exports.getDetailsFromTicketUrl = async (req, res) => {
             let ticket = await Ticket.findOne({ url: ticketUrl })
                 .populate('user_id')
                 .populate('event');
-            let userType = ticket.user_id.type;
-            let userId = ticket.user_id;
-            let { event } = ticket;
-            let eventDetails = {
-                name: event.name,
-                date: event.date,
-                venue: event.venue,
-            }
-            let ticketDetails = {
-                _id: ticket._id,
-                price: ticket.price,
-                paid: ticket.paid,
-                balance: ticket.balance,
-                participantNo: ticket.participantNo,
-                valid: ticket.valid,
-                secretString: ticket.secretString,
-                dateIssued: ticket.date
-            }
+            let userType, userId, eventDetails, ticketDetails;
+            try {
+                userType = ticket.user_id.type;
+                userId = ticket.user_id;
+            } catch (err) { }
+            try {
+                let { event } = ticket;
+                eventDetails = {
+                    name: event.name,
+                    date: event.date,
+                    venue: event.venue,
+                }
+            } catch (err) { }
+            try {
+                ticketDetails = {
+                    _id: ticket._id,
+                    price: ticket.price,
+                    paid: ticket.paid,
+                    balance: ticket.balance,
+                    participantNo: ticket.participantNo,
+                    valid: ticket.valid,
+                    secretString: ticket.secretString,
+                    dateIssued: ticket.date
+                }
+            } catch (err) { }
             res.json({ success: true, userType, eventDetails, ticketDetails, userId });
             return;
         } catch (err) {
@@ -141,6 +148,49 @@ exports.getDetailsFromTicketUrl = async (req, res) => {
         }
     }
     res.json({ success: false, error: 'tickedId not passed' });
+}
+
+exports.getDetailsFromTicketSecretString = async (req, res) => {
+    let secretString = req.body.secretString;
+    if (secretString) {
+        try {
+            let ticket = await Ticket.findOne({ secretString })
+                .populate('user_id')
+                .populate('event');
+            let userType, userId, eventDetails, ticketDetails;
+            try {
+                userType = ticket.user_id.type;
+                userId = ticket.user_id;
+            } catch (err) { }
+            try {
+                let { event } = ticket;
+                eventDetails = {
+                    name: event.name,
+                    date: event.date,
+                    venue: event.venue,
+                }
+            } catch (err) { }
+            try {
+                ticketDetails = {
+                    _id: ticket._id,
+                    price: ticket.price,
+                    paid: ticket.paid,
+                    balance: ticket.balance,
+                    participantNo: ticket.participantNo,
+                    valid: ticket.valid,
+                    secretString: ticket.secretString,
+                    dateIssued: ticket.date
+                }
+            } catch (err) { }
+            res.json({ success: true, userType, eventDetails, ticketDetails, userId });
+            return;
+        } catch (err) {
+            console.log(err);
+            res.json({ success: false, error: err });
+            return;
+        }
+    }
+    res.json({ success: false, error: 'secret string not passed' });
 }
 
 //TODO event scan
