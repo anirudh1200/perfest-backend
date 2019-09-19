@@ -2,6 +2,7 @@ const cuid = require("cuid");
 const Ticket = require("../database/models/ticket");
 const User = require("../database/models/user");
 const Volunteer = require("../database/models/volunteer");
+const Event = require("../database/models/events");
 const mail = require('../controllers/mailController')
 
 exports.issue = async (req, res) => {
@@ -22,6 +23,7 @@ exports.issue = async (req, res) => {
             let newUser = new User(data);
             usr = await newUser.save()
         }
+        let event = await Event.findById(event_id);
         let newTicket = new Ticket({
             user_id: usr._id,
             url: cuid.slug(),
@@ -31,7 +33,8 @@ exports.issue = async (req, res) => {
             price: price,
             paid: paid,
             participantNo: participantNo,
-            date: new Date()
+            date: new Date(),
+            validity: event.duration
         });
         let ticket;
         try {
@@ -89,13 +92,19 @@ exports.issue = async (req, res) => {
 };
 
 exports.invalidate = async (req, res) => {
-    let ticketId = req.body.ticketId;
-    if (ticketId) {
+    let secretString = req.body.secretString;
+    if (secretString) {
         try {
-            await Ticket.findByIdAndUpdate(
-                ticketId,
-                { $set: { valid: false } }
-            )
+            let ticket = await Ticket
+                .findOne({ secretString })
+                .populate('event');
+            let dateDiff = Math.floor((ticket.event.date - new Date()) / 1000 / 60 / 60 / 24);
+            if (dateDiff < ticket.event.duration && dateDiff > -1) {
+                ticket.validity = ticket.event.duration - dateDiff - 1;
+            } else {
+                res.json({ success: false, error: 'duration error' });
+            }
+            ticket.save();
         } catch (err) {
             console.log(err);
             res.json({ success: false, error: err });
@@ -104,7 +113,7 @@ exports.invalidate = async (req, res) => {
         res.json({ success: true });
         return;
     }
-    res.json({ success: false, error: 'tickedId not passed' });
+    res.json({ success: false, error: 'secretString not passed' });
 }
 
 exports.getDetailsFromTicketUrl = async (req, res) => {
