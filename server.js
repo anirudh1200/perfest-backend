@@ -28,7 +28,6 @@ let mongo_uri;
 
 if (process.env.LOCALDEV === 'true') {
     mongo_uri = 'mongodb://localhost/perfest';
-    // mongo_uri = 'mongodb+srv://wolf:wolfflow@perfest-rqkq2.mongodb.net/perfest?retryWrites=true&w=majority';
 } else {
     mongo_uri = process.env.DATABASE_URL;
 }
@@ -66,7 +65,7 @@ app.get('/', (req, res) => {
     res.send('Works')
 });
 
-const port = process.env.PORT || 5005;
+const port = process.env.PORT || 3001;
 app.listen(port, () => {
     console.log('App listening on port ' + port);
 });
