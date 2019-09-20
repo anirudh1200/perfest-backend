@@ -9,6 +9,10 @@ exports.issue = async (req, res) => {
     //Expecting these params from frontend when issuing a ticket
     let { email, event_id, price, paid, participantNo } = req.body;
 
+    let type = String(req.user.type);
+    type = type[0].toUpperCase() + type.slice(1);
+    console.log(type);
+
     //Check if user with following email or phone already exists
     try {
         let usr = await User.findOne(
@@ -29,7 +33,10 @@ exports.issue = async (req, res) => {
             url: cuid.slug(),
             secretString: cuid.slug(),
             event: event_id,
-            volunteer_id: req.user.userId,
+            volunteer_id: {
+                kind: type,
+                value: req.user.userId
+            },
             price: price,
             paid: paid,
             participantNo: participantNo,
