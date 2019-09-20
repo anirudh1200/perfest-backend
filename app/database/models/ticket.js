@@ -11,7 +11,7 @@ const ticketSchema = new mongoose.Schema({
 		required: true,
 		unique: true
 	},
-	secretString:{
+	secretString: {
 		type: String,
 		required: true,
 		unique: true
@@ -26,10 +26,14 @@ const ticketSchema = new mongoose.Schema({
 		required: true
 	},
 	volunteer_id: {
-		type: mongoose.Schema.Types.ObjectId,
-		// refPath: 'onModel',
-		ref : 'Admin',
-		required: true
+		kind: {
+			type: String,
+			enum: ['Admin', 'Volunteer']
+		},
+		value: {
+			type: mongoose.Schema.Types.ObjectId,
+			refPath: 'volunteer_id.kind'
+		}
 	},
 	price: {
 		type: Number,
@@ -57,8 +61,8 @@ const ticketSchema = new mongoose.Schema({
 	// }
 });
 
-ticketSchema.pre('save', function(next) {
-	if(this.price - this.paid !== 0){
+ticketSchema.pre('save', function (next) {
+	if (this.price - this.paid !== 0) {
 		this.balance = this.price - this.paid
 	} else {
 		this.balance = null;
