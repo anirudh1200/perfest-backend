@@ -16,13 +16,13 @@ exports.getLogs = async (req, res) => {
 			// .limit(perPage)
 			.sort({ 'date': -1 })
 			.select('volunteer_id paid event date user_id')
-			.populate('volunteer_id')
+			.populate('volunteer_id.value')
 			.populate('event')
 			.populate('user_id')
 		try {
 			logList = logList.map(log => {
 				try {
-					return { vname: log['volunteer_id'].name, price: log.paid, ename: log.event.name, date: log.date, uemail: log['user_id'].contact.email }
+					return { vname: log['volunteer_id'].value.name, price: log.paid, ename: log.event.name, date: log.date, uemail: log['user_id'].contact.email }
 				} catch (err) {
 					console.log(err);
 				}
