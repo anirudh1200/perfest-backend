@@ -7,4 +7,4 @@ jobs:
       - checkout
       - deploy:
           name: Deploy to Heroku
-          command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git develop
+          command: git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git develop
