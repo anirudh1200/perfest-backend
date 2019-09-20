@@ -93,27 +93,28 @@ exports.issue = async (req, res) => {
 
 exports.invalidate = async (req, res) => {
     let secretString = req.body.secretString;
+    let ticketData, ticket;
     if (secretString) {
         try {
-            let ticket = await Ticket
+            ticket = await Ticket
                 .findOne({ secretString })
                 .populate('event');
             let dateDiff = Math.floor((ticket.event.date - new Date()) / 1000 / 60 / 60 / 24);
             if (dateDiff < ticket.event.duration && dateDiff > -1) {
                 ticket.validity = ticket.event.duration - dateDiff - 1;
             } else {
-                res.json({ success: false, error: 'duration error' });
+                res.json({ success: false, ticketData, error: 'duration error' });
             }
             ticket.save();
         } catch (err) {
             console.log(err);
-            res.json({ success: false, error: err });
+            res.json({ success: false, ticketData, error: err });
             return;
         }
-        res.json({ success: true });
+        res.json({ success: true, ticketData: ticket });
         return;
     }
-    res.json({ success: false, error: 'secretString not passed' });
+    res.json({ success: false, ticketData, error: 'secretString not passed' });
 }
 
 exports.getDetailsFromTicketUrl = async (req, res) => {
