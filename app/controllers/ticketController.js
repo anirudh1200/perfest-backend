@@ -93,12 +93,13 @@ exports.issue = async (req, res) => {
 
 exports.invalidate = async (req, res) => {
     let secretString = req.body.secretString;
-    let ticketData, ticket;
+    let ticketData, ticket, originalTicket;
     if (secretString) {
         try {
             ticket = await Ticket
                 .findOne({ secretString })
                 .populate('event');
+            originalTicket = ticket;
             let dateDiff = Math.floor((ticket.event.date - new Date()) / 1000 / 60 / 60 / 24);
             if (dateDiff < ticket.event.duration && dateDiff > -1) {
                 ticket.validity = ticket.event.duration - dateDiff - 1;
@@ -111,7 +112,7 @@ exports.invalidate = async (req, res) => {
             res.json({ success: false, ticketData, error: err });
             return;
         }
-        res.json({ success: true, ticketData: ticket });
+        res.json({ success: true, ticketData: originalTicket });
         return;
     }
     res.json({ success: false, ticketData, error: 'secretString not passed' });
