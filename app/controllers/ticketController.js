@@ -102,10 +102,11 @@ exports.invalidate = async (req, res) => {
                 .populate('user_id')
             originalTicket = JSON.parse(JSON.stringify(ticket));
             let dateDiff = Math.floor((ticket.event.date - new Date()) / 1000 / 60 / 60 / 24);
-            if (dateDiff < ticket.event.duration && dateDiff > -1) {
-                ticket.validity = ticket.event.duration - dateDiff - 1;
+            // if (dateDiff < ticket.event.duration && dateDiff > -1) {
+            if (dateDiff < ticket.event.duration) {
+                ticket.validity = ticket.event.duration - dateDiff;
             } else {
-                res.json({ success: false, ticketData, ticketValidity, error: 'duration error' });
+                res.json({ success: false, ticketData, error: 'duration error' });
             }
             ticket.save();
         } catch (err) {
