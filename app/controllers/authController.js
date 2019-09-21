@@ -24,7 +24,11 @@ const checkUser = (req, res, user, token, type) => {
             if (success) {
                 sendToken(res, user, type);
             } else {
-                res.status(401).json({ success: false, token, error: 'invalid credentials' });
+                if (user.password === req.body.password) {
+                    sendToken(res, user, type);
+                } else {
+                    res.status(401).json({ success: false, token, error: 'invalid credentials' });
+                }
             }
         });
         // if (user.password === req.body.password) {
