@@ -8,11 +8,7 @@ const College = require('../database/models/college');
 
 exports.issue = async (req, res) => {
     //Expecting these params from frontend when issuing a ticket
-    let { name, phone, email, event_id, price, paid, participantNo, college } = req.body;
-
-    let type = String(req.user.type);
-    type = type[0].toUpperCase() + type.slice(1);
-    console.log(type);
+    let { name, phone, email, event_id, price, paid, participantNo, college, csi_member } = req.body;
 
     //Check if user with following email or phone already exists
     try {
@@ -27,13 +23,14 @@ exports.issue = async (req, res) => {
                     phone
                 },
                 college,
+                csi_member
             }
             let newUser = new User(data);
             usr = await newUser.save();
-            let collegeData={
+            let collegeData = {
                 name: college.name
             }
-            let newcollege= new College(collegeData);
+            let newcollege = new College(collegeData);
             await new College.save(newcollege);
         }
         let event = await Event.findById(event_id);

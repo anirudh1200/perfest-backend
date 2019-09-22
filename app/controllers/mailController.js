@@ -1,5 +1,5 @@
 const User = require('../database/models/user'),
-    ticket = require('../database/models/ticket'),
+    Ticket = require('../database/models/ticket'),
     jwt = require('jsonwebtoken'),
     sendgrid = require('@sendgrid/mail');
 
@@ -10,12 +10,15 @@ require('dotenv').config();
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
 //add controllers below
-exports.eventConfirmation = async (user, Ticket) => {
+exports.eventConfirmation = async (user, ticket) => {
     let userId = user._id;
     let userEmail = user.contact.email;
     let userName = user.name;
     let genString = Math.random().toString(36).substring(5);
     let generated_link = process.env.HOST + "/t/" + genString;
+    ticket = await Ticket.findById(ticket._id)
+            .populate('event')
+            .populate('volunteer_id')
     var data = {
         from: 'Perfest <tickets@perfest.co>',
         to: userEmail,
@@ -23,9 +26,8 @@ exports.eventConfirmation = async (user, Ticket) => {
         text: generated_link
     }
     //to be updated in databse
-    await ticket.findByIdAndUpdate(Ticket._id, { url: genString }, (err) => { console.log });
+    await Ticket.findByIdAndUpdate(ticket._id, { url: genString }, (err) => { console.log });
     // console.log(generated_link)
-
     try {
         await sendgrid.send(data);
     }
