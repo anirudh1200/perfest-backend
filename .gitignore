@@ -9,3 +9,4 @@ package-lock.json
 
 /getPass.js
 /changeTicketValidity.js
+/getAttendenceList.js

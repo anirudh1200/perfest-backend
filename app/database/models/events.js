@@ -13,9 +13,16 @@ const eventSchema = new mongoose.Schema({
 		type: Date,
 		required: true
 	},
-	cost_1: Number,
-	cost_2: Number,
-	cost_4: Number,
+	cost_CSI: {
+		cost_1: Number,
+		cost_2: Number,
+		cost_4: Number,
+	},
+	cost_nonCSI: {
+		cost_1: Number,
+		cost_2: Number,
+		cost_4: Number,
+	},
 	volunteers: [{
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User'

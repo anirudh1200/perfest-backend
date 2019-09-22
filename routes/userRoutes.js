@@ -13,6 +13,11 @@ const middleware = require('../app/middleware/middleware');
 // TODO			figure out user role(admin/volunteer) based on JWT or post param ??
 router.post('/logs', middleware.authAdminVol, userController.getLogs);
 
+// @route		POST /user/getExcelLogs
+// @desc		admin will get all excel of all logs
+// @params	token
+router.get('/getExcelLogs', middleware.authAdmin, userController.getExcelLogs);
+
 // @route		POST /user/list
 // @desc		will get all users/volunteers
 // @params	type(user/volunteer)
