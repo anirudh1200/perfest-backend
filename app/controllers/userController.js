@@ -2,6 +2,8 @@ const Ticket = require('../database/models/ticket');
 const Volunteer = require('../database/models/volunteer');
 const User = require('../database/models/user');
 const jwt = require('jsonwebtoken');
+const excel = require('excel4node');
+const fs = require('fs');
 
 exports.getLogs = async (req, res) => {
 	let perPage = 25;
@@ -265,9 +267,8 @@ exports.getAnonymousUserDetails = async (req, res) => {
 	res.json({ success: true, user });
 }
 
-exports.getCollege = async (req, res) => {
-	let college = null
-	college = await User.find({}).distinct('college.name')
+exports.getCollege = (req, res) => {
+	College.find({}).distinct('name')
 		.then(college => {
 			res.status(200).json({ college, success: true });
 		})
@@ -275,4 +276,73 @@ exports.getCollege = async (req, res) => {
 			console.log(err);
 			res.status(500).json({ success: false })
 		});
+}
+
+const getFormattedDateAndTime = (dateString) => {
+	let date = new Date(dateString);
+	let hours = date.getHours();
+	let minutes = date.getMinutes();
+	let ampm = hours >= 12 ? 'pm' : 'am';
+	hours = hours % 12;
+	hours = hours ? hours : 12; // the hour '0' should be '12'
+	let finalMinutes = minutes < 10 ? '0' + minutes : minutes.toString();
+	let strTime = hours + ':' + finalMinutes + ' ' + ampm;
+	let currentDate = date.getDate();
+	let month = date.toLocaleString('default', { month: 'short' });
+	// let year = date.getFullYear();
+	dateString = currentDate + ' ' + month;
+	return [dateString, strTime];
+}
+
+exports.getExcelLogs = async (req, res) => {
+	let workbook = new excel.Workbook();
+	let worksheet = workbook.addWorksheet('Sheet 1');
+	let allTickets = await Ticket.find({})
+		.populate('user_id event');
+	let details = ['Name', 'E-mail', 'Phone', 'College', 'Csi/Non-Csi', 'Event', 'Time', 'Date'];
+	for (let i = 0; i < details.length; i++) {
+		worksheet.cell(1, i + 1)
+			.string(details[i]);
+	}
+	for (let i = 2; i <= allTickets.length + 1; i++) {
+		try {
+			worksheet.cell(i, 1)
+				.string(allTickets[i - 1].user_id.name);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 2)
+				.string(allTickets[i - 1].user_id.contact.email);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 3)
+				.string(allTickets[i - 1].user_id.contact.phone);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 4)
+				.string(allTickets[i - 1].user_id.college.name);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 5)
+				.bool((allTickets[i - 1].user_id.csi_member))
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 6)
+				.string(allTickets[i - 1].event.name);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 7)
+				.string(getFormattedDateAndTime(allTickets[i - 1].date)[1]);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 8)
+				.string(getFormattedDateAndTime(allTickets[i - 1].date)[0]);
+		} catch (err) { }
+	}
+	workbook.write('logs.xlsx', err => {
+		if (err) {
+			res.status(503).json({ success: false, error: err });
+		} else {
+			res.download('./logs.xlsx');
+		}
+	});
 }

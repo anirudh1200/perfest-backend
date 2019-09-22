@@ -3,11 +3,12 @@ const Ticket = require("../database/models/ticket");
 const User = require("../database/models/user");
 const Volunteer = require("../database/models/volunteer");
 const Event = require("../database/models/events");
-const mail = require('../controllers/mailController')
+const mail = require('../controllers/mailController');
+const College = require('../database/models/college');
 
 exports.issue = async (req, res) => {
     //Expecting these params from frontend when issuing a ticket
-    let { email, event_id, price, paid, participantNo } = req.body;
+    let { name, phone, email, event_id, price, paid, participantNo, college } = req.body;
 
     let type = String(req.user.type);
     type = type[0].toUpperCase() + type.slice(1);
@@ -20,12 +21,20 @@ exports.issue = async (req, res) => {
         );
         if (!usr) {
             let data = {
+                name,
                 contact: {
-                    email
-                }
+                    email,
+                    phone
+                },
+                college,
             }
             let newUser = new User(data);
-            usr = await newUser.save()
+            usr = await newUser.save();
+            let collegeData={
+                name: college.name
+            }
+            let newcollege= new College(collegeData);
+            await new College.save(newcollege);
         }
         let event = await Event.findById(event_id);
         let newTicket = new Ticket({
