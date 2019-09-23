@@ -24,8 +24,7 @@
     "mocha": "^6.2.0",
     "mongoose": "^5.6.8",
     "morgan": "^1.9.1",
-    "textlocal": "^0.1.1",
-    "vue-quaggajs": "^1.0.10"
+    "textlocal": "^0.1.1"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
