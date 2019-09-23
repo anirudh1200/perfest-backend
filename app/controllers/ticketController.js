@@ -222,4 +222,19 @@ exports.getDetailsFromTicketSecretString = async (req, res) => {
     res.json({ success: false, error: 'secret string not passed' });
 }
 
+exports.delete = async (req, res) => {
+    let ticketId = req.body.ticketId;
+    if (ticketId) {
+        try {
+            await Ticket.deleteOne({ _id: ticketId });
+            res.json({ success: true });
+            return;
+        } catch (err) {
+            res.json({ success: false, error: err });
+            return;
+        }
+    }
+    res.json({ success: false, error: 'ticketId not passed' });
+}
+
 //TODO event scan
