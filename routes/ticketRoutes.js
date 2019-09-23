@@ -28,6 +28,12 @@ router.post('/getDetailsFromTicketUrl', ticket.getDetailsFromTicketUrl);
 // @return	success(true/false), error(if any), userType(bool), eventDetails, ticketDetails, userId
 router.post('/getDetailsFromTicketSecretString', middleware.authAdminVol, ticket.getDetailsFromTicketSecretString);
 
+// @route		POST /ticket/delete
+// @desc		delete a ticket
+// @params	ticketId, token
+// @return	success(true/false), error(if any)
+router.post('/delete', middleware.authAdmin, ticket.delete);
+
 //TODO event scan
 
 module.exports = router;
