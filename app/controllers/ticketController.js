@@ -75,7 +75,7 @@ exports.issue = async (req, res) => {
             try {
                 volunteer = await Volunteer.findById(req.user.userId);
                 volunteer.sold.ticket.push(ticket._id);
-                volunteer.sold.amountCollected = volunteer.sold.amountCollected + price;
+                volunteer.sold.amountCollected = volunteer.sold.amountCollected + paid;
                 try {
                     await volunteer.save();
                     res.json({ success: true });

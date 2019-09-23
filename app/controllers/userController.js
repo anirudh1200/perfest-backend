@@ -12,19 +12,20 @@ exports.getLogs = async (req, res) => {
 	let logList = [];
 	let totalSold = 0;
 	let totalCollected = 0;
+	let totalBalance = 0;
 	if (type === 'admin') {
 		logList = await Ticket.find({})
 			// .skip(perPage * page)
 			// .limit(perPage)
 			.sort({ 'date': -1 })
-			.select('volunteer_id paid event date user_id')
+			.select('volunteer_id paid event date user_id price')
 			.populate('volunteer_id.value')
 			.populate('event')
 			.populate('user_id')
 		try {
 			logList = logList.map(log => {
 				try {
-					return { vname: log['volunteer_id'].value.name, price: log.paid, ename: log.event.name, date: log.date, uemail: log['user_id'].contact.email }
+					return { vname: log['volunteer_id'].value.name, paid: log.paid, ename: log.event.name, date: log.date, price: log.price, uemail: log['user_id'].contact.email }
 				} catch (err) {
 					console.log(err);
 				}
@@ -34,20 +35,23 @@ exports.getLogs = async (req, res) => {
 				{
 					$group: {
 						_id: '',
-						paid: { $sum: '$paid' }
+						paid: { $sum: '$paid' },
+						balance: { $sum: '$balance' }
 					}
 				}, {
 					$project: {
 						_id: 0,
-						paid: '$paid'
+						paid: '$paid',
+						balance: '$balance'
 					}
 				}
 			]);
+			totalBalance = totalCollected[0].balance;
 			totalCollected = totalCollected[0].paid;
-			res.json({ success: true, logList, totalSold, totalCollected });
+			res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
 			return;
 		} catch (err) {
-			res.json({ success: true, logList, totalSold, totalCollected });
+			res.json({ success: false, logList, totalSold, totalCollected, totalBalance });
 		}
 	} else if (type === 'volunteer') {
 		let volunteer_id = req.user.userId;
@@ -59,17 +63,18 @@ exports.getLogs = async (req, res) => {
 					// .skip(perPage * page)
 					// .limit(perPage)
 					.sort({ 'date': -1 })
-					.select('date event price')
+					.select('date event price balance')
 					.populate('event')
 				logList = logList.map(log => {
-					return { vname: 'You', ename: log.event.name, date: log.date, price: log.price, uemail: log['user_id'].contact.email }
+					totalBalance = totalBalance + log.balance;
+					return { vname: 'You', ename: log.event.name, date: log.date, price: log.price, paid: log.paid, uemail: log['user_id'].contact.email }
 				});
 				totalSold = ticketsSold.length;
 				totalCollected = volunteer.sold.amountCollected;
-				res.json({ success: true, logList, totalSold, totalCollected });
+				res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
 				return;
 			} else {
-				res.json({ success: true, logList, totalSold, totalCollected });
+				res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
 				return;
 			}
 		} else {
