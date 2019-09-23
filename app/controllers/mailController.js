@@ -18,7 +18,7 @@ exports.eventConfirmation = async (user, ticket) => {
     let generated_link = process.env.HOST + "/t/" + genString;
     ticket = await Ticket.findById(ticket._id)
             .populate('event')
-            .populate('volunteer_id')
+            .populate('volunteer_id.value')
     var data = {
         from: 'Perfest <tickets@perfest.co>',
         to: userEmail,
