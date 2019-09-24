@@ -100,8 +100,7 @@ exports.authAdminVol = (req, res, next) => {
 };
 
 exports.authAll = async (req, res, next) => {
-    console.log(req.body.token);
-    if (req.body.token) {
+    if (req.body.token !== null) {
         await jwt.verify(req.body.token, "secret", (err, tokenData) => {
             if (err) {
                 res.status(400);
