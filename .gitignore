@@ -11,3 +11,5 @@ package-lock.json
 /changeTicketValidity.js
 /getAttendenceList.js
 /seed.js
+
+/test
