@@ -363,7 +363,6 @@ exports.getUserDetails = (req, res) => {
 	switch (userType) {
 		case "admin": {
 			Admin.findById(userId).select('college contact name').then((user) => {
-				console.log(user);
 				return res.status(200).json({ success: true, user })
 			}).catch(err => {
 				console.log(err)
@@ -373,7 +372,6 @@ exports.getUserDetails = (req, res) => {
 		}
 		case "volunteer": {
 			Volunteer.findById(userId).select('college contact name').then((user) => {
-				console.log(user);
 				return res.status(200).json({ success: true, user })
 			}).catch(err => {
 				console.log(err)
@@ -382,7 +380,6 @@ exports.getUserDetails = (req, res) => {
 		}
 		case "user": {
 			User.findById(userId).select('college contact name').then((user) => {
-				console.log(user);
 				return res.status(200).json({ success: true, user })
 			}).catch(err => {
 				console.log(err)
