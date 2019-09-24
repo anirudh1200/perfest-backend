@@ -101,6 +101,7 @@ exports.issue = async (req, res) => {
             res.json({ success: false, error: err });
             return;
         }
+        res.json({success: true});
     } catch (err) {
         console.log(err);
         res.send({ success: false, error: err });
