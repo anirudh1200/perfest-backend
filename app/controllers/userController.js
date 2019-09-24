@@ -65,8 +65,9 @@ exports.getLogs = async (req, res) => {
 					// .skip(perPage * page)
 					// .limit(perPage)
 					.sort({ 'date': -1 })
-					.select('date event price balance')
+					.select('date event price balance user_id')
 					.populate('event')
+					.populate('user_id')
 				logList = logList.map(log => {
 					totalBalance = totalBalance + log.balance;
 					return { _id: log._id, vname: 'You', ename: log.event.name, date: log.date, price: log.price, paid: log.paid, uemail: log['user_id'].contact.email }
