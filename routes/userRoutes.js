@@ -76,7 +76,7 @@ router.post('/upgradeAnonymousToUser', userController.upgradeAnonymousToUser);
 // @desc		changes specified field in user profile
 // @params		token, any filed present in user schema
 // @params		success, error(if any)
-router.post('/updateUserProfile', middleware.authUser, userController.updateUserProfile);
+router.post('/updateUserProfile', middleware.authAll, userController.updateUserProfile);
 
 // @route		POST /user/getUserDetails
 // @desc		get the userDetails
