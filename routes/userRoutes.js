@@ -112,6 +112,13 @@ router.post('/getAnonymousUserDetails', userController.getAnonymousUserDetails);
 // @permission	all
 router.post('/getCollege', userController.getCollege);
 
+// @route		POST /user/getUserDetails
+// @desc		get user details 
+// @params		token
+// @return		array of college names,success status
+// @permission	all
+router.post('/getUserDetails', middleware.authAll , userController.getUserDetails);
+
 
 
 module.exports = router;
