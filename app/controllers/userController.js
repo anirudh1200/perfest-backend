@@ -226,23 +226,44 @@ exports.upgradeAnonymousToUser = async (req, res) => {
 }
 
 exports.updateUserProfile = async (req, res) => {
-	let userId = req.user._id;
+	let userId = req.user.userId;
+	let userType = req.user.type;
 	let error = '';
+	let ourModel;
+	switch (userType) {
+		case 'admin': {
+			ourModel = Admin;
+			break;
+		}
+		case 'volunteer': {
+			ourModel = Volunteer;
+			break;
+		}
+		case 'user': {
+			ourModel = User;
+			break;
+		}
+		default: {
+			break;
+		}
+	}
+
 	try {
-		if (req.body.name) {
-			await User.findByIdAndUpdate({ _id: userId }, { $set: { name: req.body.name } });
-		} else if (req.body.password) {
-			await User.findByIdAndUpdate({ _id: userId }, { $set: { password: req.body.password } });
-		} else if (req.body.contact.email) {
-			await User.findByIdAndUpdate({ _id: userId }, { $set: { 'contact.email': req.body.contact.email } });
-		} else if (req.body.contact.phone) {
-			await User.findByIdAndUpdate({ _id: userId }, { $set: { 'contact.phone': req.body.contact.phone } });
-		} else if (req.body.college.name) {
-			await User.findByIdAndUpdate({ _id: userId }, { $set: { 'college.name': req.body.college.name } });
-		} else if (req.body.college.department) {
-			await User.findByIdAndUpdate({ _id: userId }, { $set: { 'college.department': req.body.college.department } });
-		} else if (req.body.college.year) {
-			await User.findByIdAndUpdate({ _id: userId }, { $set: { name: req.body.name } });
+
+		if (req.body.data.name) {
+			await ourModel.findByIdAndUpdate(userId, { name: req.body.data.name });
+		} else if (req.body.data.password) {
+			await ourModel.findByIdAndUpdate({ _id: userId }, { $set: { password: req.body.data.password } });
+		} else if (req.body.data.email) {
+			await ourModel.findByIdAndUpdate(userId, { 'contact.email': req.body.data.email });
+		} else if (req.body.data.phone) {
+			await ourModel.findByIdAndUpdate(userId, { 'contact.phone': req.body.data.phone });
+		} else if (req.body.data.college.name) {
+			await ourModel.findByIdAndUpdate(userId, { 'college.name': req.body.data.college.name });
+		} else if (req.body.data.college.department) {
+			await ourModel.findByIdAndUpdate(userId, { 'college.department': req.body.data.college.department });
+		} else if (req.body.data.college.year) {
+			await ourModel.findByIdAndUpdate(userId, { 'college.year': req.body.data.college.year });
 		} else {
 			error = 'no field specified';
 		}
