@@ -65,7 +65,7 @@ exports.getLogs = async (req, res) => {
 					// .skip(perPage * page)
 					// .limit(perPage)
 					.sort({ 'date': -1 })
-					.select('date event price balance user_id')
+					.select('date event price paid balance user_id')
 					.populate('event')
 					.populate('user_id')
 				logList = logList.map(log => {
