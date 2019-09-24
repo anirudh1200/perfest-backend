@@ -29,7 +29,7 @@ exports.issue = async (req, res) => {
             let newUser = new User(data);
             usr = await newUser.save();
             let collegeData = {
-                name: college.name
+                name: college
             }
             let newcollege = new College(collegeData);
             await newcollege.save();
