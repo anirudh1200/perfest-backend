@@ -27,7 +27,7 @@ exports.getLogs = async (req, res) => {
 		try {
 			logList = logList.map(log => {
 				try {
-					return { vname: log['volunteer_id'].value.name, paid: log.paid, ename: log.event.name, date: log.date, price: log.price, uemail: log['user_id'].contact.email }
+					return { _id: log._id, vname: log['volunteer_id'].value.name, paid: log.paid, ename: log.event.name, date: log.date, price: log.price, uemail: log['user_id'].contact.email }
 				} catch (err) {
 					console.log(err);
 				}
@@ -69,7 +69,7 @@ exports.getLogs = async (req, res) => {
 					.populate('event')
 				logList = logList.map(log => {
 					totalBalance = totalBalance + log.balance;
-					return { vname: 'You', ename: log.event.name, date: log.date, price: log.price, paid: log.paid, uemail: log['user_id'].contact.email }
+					return { _id: log._id, vname: 'You', ename: log.event.name, date: log.date, price: log.price, paid: log.paid, uemail: log['user_id'].contact.email }
 				});
 				totalSold = ticketsSold.length;
 				totalCollected = volunteer.sold.amountCollected;
