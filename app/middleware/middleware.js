@@ -98,3 +98,28 @@ exports.authAdminVol = (req, res, next) => {
         });
     }
 };
+
+exports.authAll = async (req, res, next) => {
+    console.log(req.body.token);
+    if (req.body.token) {
+        await jwt.verify(req.body.token, "secret", (err, tokenData) => {
+            if (err) {
+                res.status(400);
+            } else {
+                req.user = tokenData;
+                // console.log(req.user);
+                if (tokenData) {
+                    next();
+                } else {
+                    res.status(401).json({
+                        message: "un authenticated"
+                    });
+                }
+            }
+        });
+    } else {
+        res.status(401).json({
+            message: "un authenticated"
+        });
+    }
+};

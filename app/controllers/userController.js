@@ -1,5 +1,7 @@
 const Ticket = require('../database/models/ticket');
+const College = require('../database/models/college');
 const Volunteer = require('../database/models/volunteer');
+const Admin = require('../database/models/admin');
 const User = require('../database/models/user');
 const jwt = require('jsonwebtoken');
 const excel = require('excel4node');
@@ -261,6 +263,7 @@ exports.updateUserProfile = async (req, res) => {
 exports.getAnonymousUserDetails = async (req, res) => {
 	let userId = req.body.userId;
 	let user;
+	let userType = req.user.userType;
 	try {
 		user = await User.findById(userId);
 	}
@@ -350,4 +353,43 @@ exports.getExcelLogs = async (req, res) => {
 			res.download('./logs.xlsx');
 		}
 	});
+}
+
+exports.getUserDetails = (req, res) => {
+	let userId = req.user.userId;
+	let userType = req.user.type;
+	let userData;
+	console.log(userId)
+	switch (userType) {
+		case "admin": {
+			Admin.findById(userId).select('college contact name').then((user) => {
+				console.log(user);
+				return res.status(200).json({ success: true, user })
+			}).catch(err => {
+				console.log(err)
+				return res.status(500).json({ success: false })
+			})
+			break;
+		}
+		case "volunteer": {
+			Volunteer.findById(userId).select('college contact name').then((user) => {
+				console.log(user);
+				return res.status(200).json({ success: true, user })
+			}).catch(err => {
+				console.log(err)
+				return res.status(500).json({ success: false })
+			})
+		}
+		case "user": {
+			User.findById(userId).select('college contact name').then((user) => {
+				console.log(user);
+				return res.status(200).json({ success: true, user })
+			}).catch(err => {
+				console.log(err)
+				return res.status(500).json({ success: false })
+			})
+		}
+		default:
+			break;
+	}
 }
