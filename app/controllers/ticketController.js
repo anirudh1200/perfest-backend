@@ -15,6 +15,7 @@ exports.issue = async (req, res) => {
         let usr = await User.findOne(
             { "contact.email": email } //|| { "contact.phone": phone }
         );
+        let college1 = { name: college, department: '', year: '' }
         if (!usr) {
             let data = {
                 name,
@@ -22,7 +23,7 @@ exports.issue = async (req, res) => {
                     email,
                     phone
                 },
-                college,
+                college: college1,
                 csi_member
             }
             let newUser = new User(data);
