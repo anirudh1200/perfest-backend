@@ -3,6 +3,7 @@ const Ticket = require("../database/models/ticket");
 const User = require("../database/models/user");
 const Volunteer = require("../database/models/volunteer");
 const Event = require("../database/models/events");
+const Admin = require("../database/models/admin");
 const mail = require('../controllers/mailController');
 const College = require('../database/models/college');
 
@@ -11,6 +12,11 @@ exports.issue = async (req, res) => {
     let { name, phone, email, event_id, price, paid, participantNo, college, csi_member } = req.body;
     let issuerType = req.user.type.charAt(0).toUpperCase() + req.user.type.slice(1);
     //Check if user with following email or phone already exists
+    let oldVol = await Volunteer.findOne({"contact.email":email});
+    let oldAdmin = await Admin.findOne({"contact.email":email});
+    if(oldAdmin || oldVol){
+        return res.status(500).json({success:false,error:"Email is ether registered as admin or volunteer"})
+    }
     try {
         let usr = await User.findOne(
             { "contact.email": email } //|| { "contact.phone": phone }
