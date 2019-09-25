@@ -342,7 +342,7 @@ exports.getExcelLogs = async (req, res) => {
 	let worksheet = workbook.addWorksheet('Sheet 1');
 	let allTickets = await Ticket.find({})
 		.populate('user_id event');
-	let details = ['Name', 'E-mail', 'Phone', 'College', 'Csi/Non-Csi', 'Event', 'Time', 'Date'];
+	let details = ['Name', 'E-mail', 'Phone', 'College', 'Csi/Non-Csi', 'Event', 'Time', 'Date', 'Price', 'Paid', 'Participants'];
 	for (let i = 0; i < details.length; i++) {
 		worksheet.cell(1, i + 1)
 			.string(details[i]);
@@ -366,7 +366,7 @@ exports.getExcelLogs = async (req, res) => {
 		} catch (err) { }
 		try {
 			worksheet.cell(i, 5)
-				.bool((allTickets[i - 1].user_id.csi_member))
+				.string(allTickets[i - 1].user_id.csi_member.toString())
 		} catch (err) { }
 		try {
 			worksheet.cell(i, 6)
@@ -379,6 +379,18 @@ exports.getExcelLogs = async (req, res) => {
 		try {
 			worksheet.cell(i, 8)
 				.string(getFormattedDateAndTime(allTickets[i - 1].date)[0]);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 9)
+				.number(allTickets[i-1].price);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 10)
+				.number(allTickets[i-1].paid);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 11)
+				.number(allTickets[i-1].participantNo);
 		} catch (err) { }
 	}
 	workbook.write('logs.xlsx', err => {

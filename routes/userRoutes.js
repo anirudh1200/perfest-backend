@@ -16,7 +16,7 @@ router.post('/logs', middleware.authAdminVol, userController.getLogs);
 // @route		POST /user/getExcelLogs
 // @desc		admin will get all excel of all logs
 // @params	token
-router.get('/getExcelLogs', middleware.authAdmin, userController.getExcelLogs);
+router.post('/getExcelLogs', middleware.authAdmin, userController.getExcelLogs);
 
 // @route		POST /user/list
 // @desc		will get all users/volunteers
