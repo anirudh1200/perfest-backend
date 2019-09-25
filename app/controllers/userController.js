@@ -131,31 +131,44 @@ exports.getList = async (req, res) => {
 exports.updateUser = async (req, res) => {
 	User.findOne({ 'contact.email': req.body.email })
 		.then((user) => {
-			let data = user.toJSON()
-			delete data._id
-			delete data.type
-			delete data.csi_member
-			delete data.tickets
-			delete data._v
-			let newVolunteer = new Volunteer(data);
-			newVolunteer.save()
-				.then(() => {
-					User.findOneAndDelete({ 'contact.email': req.body.email })
-						.then(() => {
-							res.json({ success: true });
-							return;
-						})
-						.catch(err => {
-							console.log(err);
-							res.json({ success: false, error: toString(err) });
-							return;
-						});
-				})
-				.catch(err => {
-					console.log(err);
-					res.json({ success: false, error: toString(err) });
-					return;
-				});
+			if (!user) {
+				Volunteer.findOne({ 'contact.email': req.body.email })
+					.then((volunteer) => {
+						if (volunteer) {
+							return res.status(200).json({ success: false, error: "Email already registed as a volunteer" });
+						} else {
+							return res.status(401).json({ success: false, error: "User not found" });
+						}
+					})
+					.catch(err => {
+						console.log(err);
+						return res.json({ success: false, error: toString(err) });
+					});
+			} else {
+				let data = user.toJSON()
+				delete data._id
+				delete data.type
+				delete data.csi_member
+				// delete data.tickets
+				delete data._v
+				let newVolunteer = new Volunteer(data);
+				newVolunteer.save()
+					.then(() => {
+						User.findOneAndDelete({ 'contact.email': req.body.email })
+							.then(() => {
+								return res.json({ success: true });
+							})
+							.catch(err => {
+								console.log(err);
+								return res.json({ success: false, error: toString(err) });
+							});
+					})
+					.catch(err => {
+						console.log(err);
+						res.json({ success: false, error: toString(err) });
+						return;
+					});
+			}
 		})
 		.catch(err => {
 			console.log(err);

@@ -108,66 +108,76 @@ exports.createUser = async (req, res) => {
     let phone = req.body.phone;
     let email = req.body.email;
     let password = req.body.password;
-    let user = await User.findOne({ 'contact.email': email });
-    let volunteer = await Volunteer.findOne({ 'contact.email': email });
-    let admin = await Admin.findOne({ 'contact.email': email });
-    if (!(user || volunteer || admin)) {
-        // To be userd after hashing is enabled
-        bcrypt.hash(password, saltRounds, async (err, hash) => {
-            if (!err) {
-                if (req.body.phone) {
-                    data = {
-                        contact: {
-                            phone
-                        },
-                        password: hash
-                    }
-                } else {
-                    data = {
-                        contact: {
-                            email
-                        },
-                        password: hash
-                    }
-                }
-                let newUser = new User(data);
-                try {
-                    await newUser.save();
-                } catch (err) {
-                    res.json({ success: false, error: err });
-                    return;
-                }
-                res.json({ success: true });
-            }
-        });
-        //     if (req.body.phone) {
-        //         data = {
-        //             contact: {
-        //                 phone
-        //             },
-        //             password
-        //         }
-        //     } else {
-        //         data = {
-        //             contact: {
-        //                 email
-        //             },
-        //             password
-        //         }
-        //     }
-        //     let newUser = new User(data);
-        //     try {
-        //         await newUser.save();
-        //     } catch (err) {
-        //         console.log(err);
-        //         res.json({ success: false, error: err });
-        //         return;
-        //     }
-        //     res.json({ success: true });
-        //     return;
-    } else {
-        res.json({ success: false, error: 'email already taken' });
+    try {
+        let user = await User.findOne({ 'contact.email': email });
+        if (user) {
+            return res.json({ success: false, error: 'email already registered as user' });
+        }
+        let volunteer = await Volunteer.findOne({ 'contact.email': email });
+        if (volunteer) {
+            return res.json({ success: false, error: 'email already registered as volunteer' });
+        }
+        let admin = await Admin.findOne({ 'contact.email': email });
+        if (admin) {
+            return res.json({ success: false, error: 'email already registered as admin' });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.json({ success: false, error: err });
     }
+    // To be userd after hashing is enabled
+    bcrypt.hash(password, saltRounds, async (err, hash) => {
+        if (!err) {
+            if (req.body.phone) {
+                data = {
+                    contact: {
+                        phone
+                    },
+                    password: hash
+                }
+            } else {
+                data = {
+                    contact: {
+                        email
+                    },
+                    password: hash
+                }
+            }
+            let newUser = new User(data);
+            try {
+                await newUser.save();
+            } catch (err) {
+                res.json({ success: false, error: err });
+                return;
+            }
+            res.json({ success: true });
+        }
+    });
+    //     if (req.body.phone) {
+    //         data = {
+    //             contact: {
+    //                 phone
+    //             },
+    //             password
+    //         }
+    //     } else {
+    //         data = {
+    //             contact: {
+    //                 email
+    //             },
+    //             password
+    //         }
+    //     }
+    //     let newUser = new User(data);
+    //     try {
+    //         await newUser.save();
+    //     } catch (err) {
+    //         console.log(err);
+    //         res.json({ success: false, error: err });
+    //         return;
+    //     }
+    //     res.json({ success: true });
+    //     return;
 }
 
 exports.sendResetLink = async (req, res) => {
