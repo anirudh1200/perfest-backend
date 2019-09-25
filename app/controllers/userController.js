@@ -382,15 +382,15 @@ exports.getExcelLogs = async (req, res) => {
 		} catch (err) { }
 		try {
 			worksheet.cell(i, 9)
-				.number(allTickets[i-1].price);
+				.number(allTickets[i - 1].price);
 		} catch (err) { }
 		try {
 			worksheet.cell(i, 10)
-				.number(allTickets[i-1].paid);
+				.number(allTickets[i - 1].paid);
 		} catch (err) { }
 		try {
 			worksheet.cell(i, 11)
-				.number(allTickets[i-1].participantNo);
+				.number(allTickets[i - 1].participantNo);
 		} catch (err) { }
 	}
 	workbook.write('logs.xlsx', err => {
@@ -402,38 +402,32 @@ exports.getExcelLogs = async (req, res) => {
 	});
 }
 
-exports.getUserDetails = (req, res) => {
+exports.getUserDetails = async (req, res) => {
 	let userId = req.user.userId;
 	let userType = req.user.type;
-	let userData;
-	console.log(userId)
+	let ourModel;
+	let userData
 	switch (userType) {
 		case "admin": {
-			Admin.findById(userId).select('college contact name').then((user) => {
-				return res.status(200).json({ success: true, user })
-			}).catch(err => {
-				console.log(err)
-				return res.status(500).json({ success: false })
-			})
+			ourModel = Admin
 			break;
 		}
 		case "volunteer": {
-			Volunteer.findById(userId).select('college contact name').then((user) => {
-				return res.status(200).json({ success: true, user })
-			}).catch(err => {
-				console.log(err)
-				return res.status(500).json({ success: false })
-			})
+			ourModel = Volunteer
+			break;
 		}
 		case "user": {
-			User.findById(userId).select('college contact name').then((user) => {
-				return res.status(200).json({ success: true, user })
-			}).catch(err => {
-				console.log(err)
-				return res.status(500).json({ success: false })
-			})
-		}
-		default:
+			ourModel = User
 			break;
+		}
+		default: {
+			break;
+		}
 	}
+	try {
+		userData = await ourModel.findById(userId).select('college contact name')
+	} catch (error) {
+		return res.json(500).json({ success: false, error })
+	}
+	return res.status(200).json({ success: true, user: userData })
 }
