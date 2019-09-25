@@ -12,8 +12,14 @@ exports.issue = async (req, res) => {
     let { name, phone, email, event_id, price, paid, participantNo, college, csi_member } = req.body;
     let issuerType = req.user.type.charAt(0).toUpperCase() + req.user.type.slice(1);
     //Check if user with following email or phone already exists
-    let oldVol = await Volunteer.findOne({ "contact.email": email });
-    let oldAdmin = await Admin.findOne({ "contact.email": email });
+    let oldAdmin;
+    let oldVol;
+    try {
+        oldVol = await Volunteer.findOne({ "contact.email": email });
+        oldAdmin = await Admin.findOne({ "contact.email": email });
+    } catch (error) {
+        return res.json({ success: false })
+    }
     if (oldAdmin || oldVol) {
         return res.status(500).json({ success: false, error: "Email is ether registered as admin or volunteer" })
     }
@@ -32,12 +38,22 @@ exports.issue = async (req, res) => {
                 csi_member
             }
             let newUser = new User(data);
-            usr = await newUser.save();
+            try
+            {
+                usr = await newUser.save();
+            }
+            catch(err){
+                console.log(err)
+            }
             let collegeData = {
                 name: college.name
             }
-            let newcollege = new College(collegeData);
-            await newcollege.save();
+            let newcollege = new College();
+            await newcollege.findOneAndUpdate({},
+                collegeData,
+                { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+
         }
         let event = await Event.findById(event_id);
         let ticketData = {
@@ -96,32 +112,29 @@ exports.issue = async (req, res) => {
                 volunteer.sold.amountCollected = volunteer.sold.amountCollected + paid;
                 try {
                     await volunteer.save();
-                    res.json({ success: true });
                 } catch (err) {
                     console.log(err);
-                    res.json({ success: false, error: err });
-                    return;
+                    return res.json({ success: false, error: err });
+
                 }
             } catch (err) {
                 console.log(err);
-                res.json({ success: false, error: err });
-                return;
+                return res.json({ success: false, error: err });
             }
         }
         try {
             let result = await mail.eventConfirmation(usr, ticket);
             if (!result) {
-                res.json({ success: result, error: 'mail issue' });
-                return;
+                return res.status(500).json({ success: result, error: 'mail issue' });
+
             }
         } catch (err) {
             console.log(err);
-            res.json({ success: false, error: err });
-            return;
+            return res.status(500).json({ success: false, error: err });
         }
     } catch (err) {
         console.log(err);
-        res.send({ success: false, error: err });
+        return res.status(500).send({ success: false, error: err });
     }
     return res.json({ success: true });
 };
