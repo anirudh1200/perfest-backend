@@ -12,10 +12,10 @@ exports.issue = async (req, res) => {
     let { name, phone, email, event_id, price, paid, participantNo, college, csi_member } = req.body;
     let issuerType = req.user.type.charAt(0).toUpperCase() + req.user.type.slice(1);
     //Check if user with following email or phone already exists
-    let oldVol = await Volunteer.findOne({"contact.email":email});
-    let oldAdmin = await Admin.findOne({"contact.email":email});
-    if(oldAdmin || oldVol){
-        return res.status(500).json({success:false,error:"Email is ether registered as admin or volunteer"})
+    let oldVol = await Volunteer.findOne({ "contact.email": email });
+    let oldAdmin = await Admin.findOne({ "contact.email": email });
+    if (oldAdmin || oldVol) {
+        return res.status(500).json({ success: false, error: "Email is ether registered as admin or volunteer" })
     }
     try {
         let usr = await User.findOne(
@@ -40,7 +40,7 @@ exports.issue = async (req, res) => {
             await newcollege.save();
         }
         let event = await Event.findById(event_id);
-        let newTicket = new Ticket({
+        let ticketData = {
             user_id: usr._id,
             url: cuid.slug(),
             secretString: cuid.slug(),
@@ -54,7 +54,19 @@ exports.issue = async (req, res) => {
             participantNo: participantNo,
             date: new Date(),
             validity: event.duration
-        });
+        }
+        let oldData = {
+            user_id: usr._id,
+            event: event_id,
+            price: price,
+            paid: paid,
+            participantNo: participantNo,
+        }
+        let oldTicket = await Ticket.findOne(oldData)
+        if (oldTicket) {
+            return res.status(500).json({ success: false, error: "Ticket for this data set already issued" })
+        }
+        let newTicket = new Ticket(ticketData);
         let ticket;
         try {
             ticket = await newTicket.save();
