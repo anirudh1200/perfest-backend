@@ -38,11 +38,10 @@ exports.issue = async (req, res) => {
                 csi_member
             }
             let newUser = new User(data);
-            try
-            {
+            try {
                 usr = await newUser.save();
             }
-            catch(err){
+            catch (err) {
                 console.log(err)
             }
             // let collegeData = {
@@ -122,16 +121,16 @@ exports.issue = async (req, res) => {
                 return res.status(500).json({ success: false, error: err });
             }
         }
-        // try {
-        //     let result = await mail.eventConfirmation(usr, ticket);
-        //     if (!result) {
-        //         return res.status(500).json({ success: result, error: 'mail issue' });
+        try {
+            let result = await mail.eventConfirmation(usr, ticket);
+            if (!result) {
+                return res.status(500).json({ success: result, error: 'mail issue' });
 
-        //     }
-        // } catch (err) {
-        //     console.log(err);
-        //     return res.status(500).json({ success: false, error: err });
-        // }
+            }
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({ success: false, error: err });
+        }
     } catch (err) {
         console.log(err);
         return res.status(500).send({ success: false, error: err });
