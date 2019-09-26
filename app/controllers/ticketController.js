@@ -18,7 +18,7 @@ exports.issue = async (req, res) => {
         oldVol = await Volunteer.findOne({ "contact.email": email });
         oldAdmin = await Admin.findOne({ "contact.email": email });
     } catch (error) {
-        return res.json({ success: false })
+        return res.status(500).json({ success: false })
     }
     if (oldAdmin || oldVol) {
         return res.status(500).json({ success: false, error: "Email is ether registered as admin or volunteer" })
@@ -101,7 +101,7 @@ exports.issue = async (req, res) => {
             )
         } catch (err) {
             console.log(err);
-            res.json({ success: false, error: err });
+            res.status(500).json({ success: false, error: err });
             return;
         }
         if (issuerType === "Volunteer") {
@@ -114,12 +114,12 @@ exports.issue = async (req, res) => {
                     await volunteer.save();
                 } catch (err) {
                     console.log(err);
-                    return res.json({ success: false, error: err });
+                    return res.status(500).json({ success: false, error: err });
 
                 }
             } catch (err) {
                 console.log(err);
-                return res.json({ success: false, error: err });
+                return res.status(500).json({ success: false, error: err });
             }
         }
         try {
