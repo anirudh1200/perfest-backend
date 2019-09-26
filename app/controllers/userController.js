@@ -405,7 +405,7 @@ exports.getExcelLogs = async (req, res) => {
 			let paid = allTickets[i - 1].paid;
 			let balance = 0;
 			if (paid <= price) {
-				balance = paid - price;
+				balance = price - paid;
 			}
 			worksheet.cell(i, 11)
 				.number(balance);
