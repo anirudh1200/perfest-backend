@@ -261,8 +261,8 @@ exports.delete = async (req, res) => {
         try {
             ticket = await Ticket.findOne({ _id: ticketId });
             if (ticket.volunteer_id.kind === 'Volunteer') {
-                volunteer = Volunteer.findOne({ _id: ticket.volunteer_id.value });
-                Volunteer.update({ _id: ticket.volunteer_id.value }, { $pullAll: { 'sold.ticket': [ticket._id] }, $set: { 'sold.amountCollected': volunteer.sold.amountCollected - ticket.paid } })
+                volunteer = await Volunteer.findOne({ _id: ticket.volunteer_id.value });
+                await Volunteer.updateOne({ _id: ticket.volunteer_id.value }, { $pullAll: { 'sold.ticket': [ticket._id] }, $set: { 'sold.amountCollected': volunteer.sold.amountCollected - ticket.paid } })
             }
         } catch (err) {
             console.log(err);
