@@ -45,14 +45,14 @@ exports.issue = async (req, res) => {
             catch(err){
                 console.log(err)
             }
-            let collegeData = {
-                name: college.name
-            }
-            let newcollege = new College();
-            await newcollege.findOneAndUpdate({},
-                collegeData,
-                { upsert: true, new: true, setDefaultsOnInsert: true }
-            );
+            // let collegeData = {
+            //     name: college.name
+            // }
+            // let newcollege = new College();
+            // await College.findOneAndUpdate({},
+            //     collegeData,
+            //     { upsert: true, new: true, setDefaultsOnInsert: true }
+            // );
 
         }
         let event = await Event.findById(event_id);
@@ -122,16 +122,16 @@ exports.issue = async (req, res) => {
                 return res.status(500).json({ success: false, error: err });
             }
         }
-        try {
-            let result = await mail.eventConfirmation(usr, ticket);
-            if (!result) {
-                return res.status(500).json({ success: result, error: 'mail issue' });
+        // try {
+        //     let result = await mail.eventConfirmation(usr, ticket);
+        //     if (!result) {
+        //         return res.status(500).json({ success: result, error: 'mail issue' });
 
-            }
-        } catch (err) {
-            console.log(err);
-            return res.status(500).json({ success: false, error: err });
-        }
+        //     }
+        // } catch (err) {
+        //     console.log(err);
+        //     return res.status(500).json({ success: false, error: err });
+        // }
     } catch (err) {
         console.log(err);
         return res.status(500).send({ success: false, error: err });
