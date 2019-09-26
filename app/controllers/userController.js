@@ -8,17 +8,25 @@ const excel = require('excel4node');
 const fs = require('fs');
 
 exports.getLogs = async (req, res) => {
-	let perPage = 25;
+	let perPage = 50;
 	let type = req.user.type;
 	let page = req.body.page - 1;
 	let logList = [];
 	let totalSold = 0;
 	let totalCollected = 0;
 	let totalBalance = 0;
+	let skip = 0;
 	if (type === 'admin') {
+		if (page == 0) {
+			perPage = 100;
+			skip = 0;
+		} else {
+			skip = 100 + ((page - 1) * perPage);
+			perPage = 50;
+		}
 		logList = await Ticket.find({})
-			// .skip(perPage * page)
-			// .limit(perPage)
+			.skip(skip)
+			.limit(perPage)
 			.sort({ 'date': -1 })
 			.select('volunteer_id paid event date user_id price')
 			.populate('volunteer_id.value')
@@ -70,10 +78,10 @@ exports.getLogs = async (req, res) => {
 					.populate('user_id')
 				logList = logList.map(log => {
 					totalBalance = totalBalance + log.balance;
+					totalCollected = totalCollected + log.paid;
 					return { _id: log._id, vname: 'You', ename: log.event.name, date: log.date, price: log.price, paid: log.paid, uemail: log['user_id'].contact.email }
 				});
 				totalSold = ticketsSold.length;
-				totalCollected = volunteer.sold.amountCollected;
 				res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
 				return;
 			} else {
@@ -337,10 +345,10 @@ const getFormattedDateAndTime = (dateString) => {
 	return [dateString, strTime];
 }
 exports.getExcelLogs = async (req, res) => {
-	// Remove current logs.xlsx
-	if (fs.existsSync('./logs.xlsx')) {
-		fs.unlinkSync('./logs.xlsx');
-	}
+		// Remove current logs.xlsx
+		if (fs.existsSync('./logs.xlsx')) {
+			fs.unlinkSync('./logs.xlsx');
+		}
 
 	let workbook = new excel.Workbook();
 	let worksheet = workbook.addWorksheet('Sheet 1');
@@ -423,7 +431,7 @@ exports.getExcelLogs = async (req, res) => {
 				.string(allTickets[i - 1].volunteer_id.value.contact.email);
 		} catch (err) { }
 	}
-
+	
 	workbook.write('logs.xlsx', err => {
 		if (err) {
 			res.status(503).json({ success: false, error: err });
