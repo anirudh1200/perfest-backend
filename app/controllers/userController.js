@@ -336,13 +336,20 @@ const getFormattedDateAndTime = (dateString) => {
 	dateString = currentDate + ' ' + month;
 	return [dateString, strTime];
 }
-
 exports.getExcelLogs = async (req, res) => {
 	let workbook = new excel.Workbook();
 	let worksheet = workbook.addWorksheet('Sheet 1');
-	let allTickets = await Ticket.find({})
-		.populate('user_id event');
-	let details = ['Name', 'E-mail', 'Phone', 'College', 'Csi/Non-Csi', 'Event', 'Time', 'Date', 'Price', 'Paid', 'Participants'];
+	let allTickets;
+	try{
+		allTickets = await Ticket.find({})
+		.populate('user_id')
+		.populate('event')
+		.populate('volunteer_id.value');
+	} catch(err){
+		console.log(err);
+	}
+
+	let details = ['Name', 'E-mail', 'Phone', 'College', 'Csi/Non-Csi', 'Event', 'Time', 'Date', 'Price', 'Paid', 'Balance', 'Participants', 'Vol Name', 'Vol Email'];
 	for (let i = 0; i < details.length; i++) {
 		worksheet.cell(1, i + 1)
 			.string(details[i]);
@@ -382,15 +389,27 @@ exports.getExcelLogs = async (req, res) => {
 		} catch (err) { }
 		try {
 			worksheet.cell(i, 9)
-				.number(allTickets[i - 1].price);
+				.number(allTickets[i-1].price);
 		} catch (err) { }
 		try {
 			worksheet.cell(i, 10)
-				.number(allTickets[i - 1].paid);
+				.number(allTickets[i-1].paid);
 		} catch (err) { }
 		try {
 			worksheet.cell(i, 11)
-				.number(allTickets[i - 1].participantNo);
+				.number(allTickets[i-1].balance);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 12)
+				.number(allTickets[i-1].participantNo);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 13)
+				.string(allTickets[i-1].volunteer_id.value.name);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 14)
+				.string(allTickets[i-1].volunteer_id.value.contact.email);
 		} catch (err) { }
 	}
 	workbook.write('logs.xlsx', err => {
