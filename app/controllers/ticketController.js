@@ -43,6 +43,8 @@ exports.issue = async (req, res) => {
             }
             catch (err) {
                 console.log(err)
+                res.json({success: false, error: err});
+                return;
             }
             // let collegeData = {
             //     name: college.name
@@ -124,8 +126,7 @@ exports.issue = async (req, res) => {
         try {
             let result = await mail.eventConfirmation(usr, ticket);
             if (!result) {
-                return res.status(500).json({ success: result, error: 'mail issue' });
-
+                return res.status(500).json({ success: result, error: 'A ticket has been issued successfully but due to technical a difficulty a mail could not be sent. Please visit perfest.co/t/'+ ticket.url +' asap to get your ticket and save the link manually or take a screenshot.' });
             }
         } catch (err) {
             console.log(err);
