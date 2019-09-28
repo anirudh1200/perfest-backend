@@ -183,18 +183,18 @@ exports.createUser = async (req, res) => {
 exports.sendResetLink = async (req, res) => {
     let email = req.body.email;
     await User.findOne({ 'contact.email': email })
-        .then((user) => {
+        .then(async (user) => {
             if (user != null) {
                 console.log(user);
-                if (mail.resetPassword(user)) {
+                if (await mail.resetPassword(user)) {
                     return res.status(200).json({ success: true, message: "mail was sent successfully" })
                 }
                 else {
-                    return res.status(500).json({ success: false, error: "email not sent" })
+                    return res.status(500).json({ success: false, error: "Email not sent. Please try again" })
                 }
             }
             else {
-                return res.status(500).json({ error: "user not found" });
+                return res.status(500).json({ error: "User not found" });
             }
         })
         .catch((err) => {
@@ -204,19 +204,20 @@ exports.sendResetLink = async (req, res) => {
 
 }
 
-exports.resetPassword = async (req, res) => {
+exports.resetPassword = (req, res) => {
     // To be userd after hashing is enabled
-    bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
-        let user = User.findOneAndUpdate({ 'url': req.body.userStr }, { password: hash })
+    bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+        User.findOneAndUpdate({ 'url': req.body.userStr }, { password: hash })
             .then((user) => {
                 if (user == null) {
-                    return res.json({ success: false, error: "user not found" })
+                    return res.json({ success: false, error: "user not found" });
+                } else {
+                    return res.status(200).json({ success: true, message: "Password was reset" });
                 }
             })
             .catch((err) => {
                 console.log(err);
                 return res.status(500).json({ error: "user not found" });
             })
-        return res.status(200).json({ message: "Password was reset" });
     });
 }
