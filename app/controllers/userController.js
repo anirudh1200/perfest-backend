@@ -65,36 +65,30 @@ exports.getLogs = async (req, res) => {
 		}
 	} else if (type === 'volunteer') {
 		let volunteer_id = req.user.userId;
-		let volunteer = await Volunteer.findById(volunteer_id).select('sold');
-		if (volunteer) {
-			let ticketsSold = volunteer.sold.ticket;
-			if (ticketsSold.length > 0) {
-				logList = await Ticket.find({ '_id': { $in: ticketsSold } })
-					// .skip(perPage * page)
-					// .limit(perPage)
-					.sort({ 'date': -1 })
-					.select('date event price paid balance user_id')
-					.populate('event')
-					.populate('user_id')
-				logList = logList.map(log => {
-					totalBalance = totalBalance + log.balance;
-					totalCollected = totalCollected + log.paid;
-					return { _id: log._id, vname: 'You', ename: log.event.name, date: log.date, price: log.price, paid: log.paid, uemail: log['user_id'].contact.email }
-				});
-				totalSold = ticketsSold.length;
-				res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
-				return;
-			} else {
-				res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
-				return;
-			}
-		} else {
-			res.json({ success: false, error: 'invalid volunteer' });
-			return;
+		try {
+			logList = await Ticket.find({ 'volunteer_id.value': volunteer_id })
+				// .skip(perPage * page)
+				// .limit(perPage)
+				.sort({ 'date': -1 })
+				.select('date event price paid balance user_id')
+				.populate('event')
+				.populate('user_id')
+		} catch (err) {
+			return res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
 		}
+		logList = logList.map(log => {
+			totalBalance = totalBalance + log.balance;
+			totalCollected = totalCollected + log.paid;
+			try {
+				return { _id: log._id, vname: 'You', ename: log.event.name, date: log.date, price: log.price, paid: log.paid, uemail: log['user_id'].contact.email };
+			} catch (err) {
+				console.log(log);
+			}
+		});
+		totalSold = logList.length;
+		return res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
 	} else {
-		res.status(401).json({ success: false, error: 'invalid role' });
-		return;
+		return res.status(401).json({ success: false, error: 'invalid role' });
 	}
 }
 
@@ -345,10 +339,10 @@ const getFormattedDateAndTime = (dateString) => {
 	return [dateString, strTime];
 }
 exports.getExcelLogs = async (req, res) => {
-		// Remove current logs.xlsx
-		if (fs.existsSync('./logs.xlsx')) {
-			fs.unlinkSync('./logs.xlsx');
-		}
+	// Remove current logs.xlsx
+	if (fs.existsSync('./logs.xlsx')) {
+		fs.unlinkSync('./logs.xlsx');
+	}
 
 	let workbook = new excel.Workbook();
 	let worksheet = workbook.addWorksheet('Sheet 1');
@@ -431,7 +425,7 @@ exports.getExcelLogs = async (req, res) => {
 				.string(allTickets[i - 1].volunteer_id.value.contact.email);
 		} catch (err) { }
 	}
-	
+
 	workbook.write('logs.xlsx', err => {
 		if (err) {
 			res.status(503).json({ success: false, error: err });

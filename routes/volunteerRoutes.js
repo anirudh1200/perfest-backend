@@ -29,4 +29,11 @@ router.post('/deleteVolunteer', middleware.authAdmin, volunteerController.delete
 // @return	all fields in volunteer schema
 router.post('/getDetails', middleware.authAdminVol, volunteerController.getDetails);
 
+// @route		POST /volunteer/getLogs
+// @desc		admin will get indivisual voulnteer logs
+// @params	token, volunteerId
+// @permission	admin
+// @return	array of objects {ename, vname, price, date}, totalCollected(money), totalSold(tickets)
+router.post('/getVolLogs', middleware.authAdmin, volunteerController.getVolLogs);
+
 module.exports = router;
