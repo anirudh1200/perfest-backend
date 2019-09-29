@@ -182,32 +182,36 @@ exports.createUser = async (req, res) => {
 
 exports.sendResetLink = async (req, res) => {
     let email = req.body.email;
-    await User.findOne({ 'contact.email': email })
-        .then(async (user) => {
-            if (user != null) {
-                console.log(user);
-                if (await mail.resetPassword(user)) {
-                    return res.status(200).json({ success: true, message: "mail was sent successfully" })
-                }
-                else {
-                    return res.status(500).json({ success: false, error: "Email not sent. Please try again" })
-                }
-            }
-            else {
-                return res.status(500).json({ error: "User not found" });
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            return res.status(500).json({ success: false, error: "DB error" })
-        })
-
+    let user, type;
+    try {
+        user = await User.findOne({ 'contact.email': email });
+        type = 'user'
+        if (!user) {
+            user = await Volunteer.findOne({ 'contact.email': email });
+            type = 'volunteer'
+        }
+        if (!user) {
+            user = await Admin.findOne({ 'contact.email': email });
+            type = 'admin'
+        }
+    } catch (err) {
+        return res.json({ success: false, error: err });
+    }
+    if (!user) return res.status(500).json({ error: "User not found" });
+    if (await mail.resetPassword(user, type)) {
+        return res.status(200).json({ success: true, message: "mail was sent successfully" })
+    }
+    else {
+        return res.status(500).json({ success: false, error: "Email not sent. Please try again" })
+    }
 }
 
 exports.resetPassword = (req, res) => {
     // To be userd after hashing is enabled
+    let type = req.body.type;
+    let userType = { '1': User, '2': Volunteer, '3': Admin };
     bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
-        User.findOneAndUpdate({ 'url': req.body.userStr }, { password: hash })
+        userType[type].findOneAndUpdate({ 'url': req.body.userStr }, { password: hash })
             .then((user) => {
                 if (user == null) {
                     return res.json({ success: false, error: "user not found" });
