@@ -208,7 +208,7 @@ exports.sendResetLink = async (req, res) => {
 
 exports.resetPassword = (req, res) => {
     // To be userd after hashing is enabled
-    let type = req.body.type;
+    let type = req.body.userStr.slice(-1);
     let userType = { '1': User, '2': Volunteer, '3': Admin };
     bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
         userType[type].findOneAndUpdate({ 'url': req.body.userStr }, { password: hash })
