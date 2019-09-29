@@ -356,7 +356,7 @@ exports.getExcelLogs = async (req, res) => {
 		console.log(err);
 	}
 
-	let details = ['Name', 'E-mail', 'Phone', 'College', 'Csi/Non-Csi', 'Event', 'Time', 'Date', 'Price', 'Paid', 'Balance', 'Participants', 'Vol Name', 'Vol Email'];
+	let details = ['Name', 'E-mail', 'Phone', 'College', 'Csi/Non-Csi', 'Event', 'Time', 'Date', 'Price', 'Paid', 'Balance', 'Participants', 'Vol Name', 'Vol Email', 'College Year'];
 	for (let i = 0; i < details.length; i++) {
 		worksheet.cell(1, i + 1)
 			.string(details[i]);
@@ -423,6 +423,10 @@ exports.getExcelLogs = async (req, res) => {
 		try {
 			worksheet.cell(i, 14)
 				.string(allTickets[i - 1].volunteer_id.value.contact.email);
+		} catch (err) { }
+		try {
+			worksheet.cell(i, 15)
+				.string(allTickets[i - 1].user_id.college.year);
 		} catch (err) { }
 	}
 
