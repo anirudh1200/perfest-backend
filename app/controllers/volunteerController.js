@@ -108,3 +108,15 @@ exports.getVolLogs = async (req, res) => {
 	res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
 	return;
 }
+
+exports.updateAdminBalance = async (req, res) => {
+	let newBalance = req.body.newBalance;
+	let volunteerId = req.body.volunteerId;
+	try {
+		await Volunteer.findByIdAndUpdate(volunteerId, { $set: { adminBalance: newBalance } });
+		return res.json({ success: true });
+	} catch (err) {
+		console.log(err);
+		return res.json({ success: false, error: err });
+	}
+}

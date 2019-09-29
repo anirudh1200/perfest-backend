@@ -114,14 +114,14 @@ exports.getList = async (req, res) => {
 		try {
 			list = await Volunteer.find()
 				// add/remove fileds from select as per necessity
-				.select('name contact')
+				.select('name contact adminBalance')
 		} catch (err) {
 			console.log(err);
 			res.json({ success: false, list, error: err });
 			return;
 		}
 		list = list.map(vol => {
-			return { _id: vol._id, name: vol.name, email: vol.email }
+			return { _id: vol._id, name: vol.name, email: vol.contact.email, adminBalance: vol.adminBalance }
 		});
 		res.json({ success: true, list });
 		return;

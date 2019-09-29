@@ -36,4 +36,11 @@ router.post('/getDetails', middleware.authAdminVol, volunteerController.getDetai
 // @return	array of objects {ename, vname, price, date}, totalCollected(money), totalSold(tickets)
 router.post('/getVolLogs', middleware.authAdmin, volunteerController.getVolLogs);
 
+// @route		POST /volunteer/updateAdminBalance
+// @desc		admin can update volunteer balance to be paid
+// @params	token, volunteerId, newBalance
+// @permission	admin
+// @return	success(boolean), error(if any)
+router.post('/updateAdminBalance', middleware.authAdmin, volunteerController.updateAdminBalance);
+
 module.exports = router;

@@ -48,6 +48,10 @@ const volunteerSchema = new mongoose.Schema({
 			type: Number,
 			default: 0
 		},
+	},
+	adminBalance: {
+		type: Number,
+		default: 0
 	}
 });
 
