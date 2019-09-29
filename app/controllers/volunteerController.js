@@ -1,5 +1,6 @@
 const Events = require('../database/models/events');
 const Volunteer = require('../database/models/volunteer');
+const Ticket = require('../database/models/ticket');
 
 exports.assignEvent = async (req, res) => {
 	let eventId = req.body.eventId;
@@ -75,4 +76,35 @@ exports.getDetails = async (req, res) => {
 		console.log(err);
 		res.json({ success: false, volunteer, error: err });
 	}
+}
+
+exports.getVolLogs = async (req, res) => {
+	let logList = [];
+	let totalSold = 0;
+	let totalCollected = 0;
+	let totalBalance = 0;
+	let volunteer_id = req.body.volunteerId;
+	try {
+		logList = await Ticket.find({ 'volunteer_id.value': volunteer_id })
+			// .skip(perPage * page)
+			// .limit(perPage)
+			.sort({ 'date': -1 })
+			.select('date event price paid balance user_id')
+			.populate('event')
+			.populate('user_id')
+	} catch (err) {
+		return res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
+	}
+	logList = logList.map(log => {
+		totalBalance = totalBalance + log.balance;
+		totalCollected = totalCollected + log.paid;
+		try {
+			return { _id: log._id, vname: 'Vol', ename: log.event.name, date: log.date, price: log.price, paid: log.paid, uemail: log['user_id'].contact.email };
+		} catch (err) {
+			console.log(log);
+		}
+	});
+	totalSold = logList.length;
+	res.json({ success: true, logList, totalSold, totalCollected, totalBalance });
+	return;
 }
