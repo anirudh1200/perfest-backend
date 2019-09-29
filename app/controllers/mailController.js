@@ -1,4 +1,6 @@
 const User = require('../database/models/user'),
+    Volunteer = require('../database/models/volunteer'),
+    Admin = require('../database/models/admin'),
     Ticket = require('../database/models/ticket'),
     sendgrid = require('@sendgrid/mail');
 
@@ -51,11 +53,24 @@ exports.eventConfirmation = async (user, ticket) => {
     return true;
 }
 
-exports.resetPassword = async (user) => {
+exports.resetPassword = async (user, type) => {
     let userEmail = user.contact.email;
     let userName = user.name;
     let genString = Math.random().toString(36).substring(3);
     let generated_link = process.env.HOST + "/c/" + genString;
+    // Update the reset url in database
+    if (type === 'user') {
+        await User.findByIdAndUpdate(user._id, { url: genString }, (err) => { console.log });
+        generated_link = generated_link + '1';
+    }
+    else if (type === 'volunteer') {
+        await Volunteer.findByIdAndUpdate(user._id, { url: genString }, (err) => { console.log });
+        generated_link = generated_link + '2';
+    } else {
+        await Admin.findByIdAndUpdate(user._id, { url: genString }, (err) => { console.log });
+        generated_link = generated_link + '3';
+    }
+    // Send mail via sendgrid
     var data = {
         from: 'Perfest CC <services@perfest.co>',
         to: userEmail,
@@ -63,10 +78,6 @@ exports.resetPassword = async (user) => {
         text: "Dear " + userName + ",\n Use this email to reset your password.The link will be active for 30 mintue from the issue time.\n"
             + generated_link
     }
-    // Update the reset url in database
-    await User.findByIdAndUpdate(user._id, { url: genString }, (err) => { console.log });
-
-    // Send mail via sendgrid
     try {
         await sendgrid.send(data);
     }
@@ -74,7 +85,6 @@ exports.resetPassword = async (user) => {
         console.log(err);
         return false;
     }
-
     return true;
 }
 
